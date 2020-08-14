@@ -1,7 +1,6 @@
-
 # breathing-space-if-stub
 
-This is a placeholder README.md for a new repository
+This is a stub implementation of the EIS backend for the Breathing Space program.
 
 ### License
 

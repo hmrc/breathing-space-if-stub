@@ -1,3 +1,4 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.breathingspaceifstub.controllers.MicroserviceHelloWorldController.hello
+GET        /breathing-space-period/:id            uk.gov.hmrc.breathingspace.controllers.BreathingSpacePeriodController.retrieve(id)
+POST       /breathing-space-period             uk.gov.hmrc.breathingspace.controllers.BreathingSpacePeriodController.create
