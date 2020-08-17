@@ -10,7 +10,7 @@ import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.breathingspace.config.AppConfig
 
-class BreathingSpacePeriodControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
+class BreathingSpaceControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   private val fakeRequest = FakeRequest("GET", "/")
 
@@ -20,7 +20,7 @@ class BreathingSpacePeriodControllerSpec extends AnyWordSpec with Matchers with 
   private val serviceConfig = new ServicesConfig(configuration)
   private val appConfig     = new AppConfig(configuration, serviceConfig)
 
-  private val controller = new BreathingSpacePeriodController(appConfig, Helpers.stubControllerComponents())
+  private val controller = new BreathingSpaceController(appConfig, Helpers.stubControllerComponents())
 
   "GET /" should {
     "return 200" in {

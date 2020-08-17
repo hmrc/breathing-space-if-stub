@@ -23,21 +23,11 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.Future
 
-@Singleton()
-class BreathingSpacePeriodController @Inject()(appConfig: AppConfig, cc: ControllerComponents)
-    extends BackendController(cc) {
+@Singleton
+class HttpErrorController @Inject()(appConfig: AppConfig, cc: ControllerComponents)
+  extends BackendController(cc) {
 
-  def retrieve(id: String): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(s"Hello world $id"))
-  }
-
-  def create(): Action[AnyContent] = Action.async { implicit request =>
-    val result = request.body.asJson match {
-      case Some(value) => Ok(value)
-      case None => NotAcceptable("must send data")
-    }
-
-//    val result = request.body.asJson.fold(JsValue("must send data"))(Ok(_))
-    Future.successful(result)
+  def customReturn(statusCode: Int): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(new Status(statusCode))
   }
 }

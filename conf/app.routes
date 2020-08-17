@@ -1,4 +1,8 @@
 # microservice specific routes
 
-GET        /breathing-space-period/:id            uk.gov.hmrc.breathingspace.controllers.BreathingSpacePeriodController.retrieve(id)
-POST       /breathing-space-period             uk.gov.hmrc.breathingspace.controllers.BreathingSpacePeriodController.create
+GET        /return-me-a     uk.gov.hmrc.breathingspace.controllers.HttpErrorController.customReturn(status: Int)
+POST       /return-me-a     uk.gov.hmrc.breathingspace.controllers.HttpErrorController.customReturn(status: Int)
+
+POST       /flow-6          uk.gov.hmrc.breathingspace.controllers.BreathingSpaceController.flow6
+PUT        /flow-12         uk.gov.hmrc.breathingspace.controllers.BreathingSpaceController.flow12
+DELETE     /flow-14a        uk.gov.hmrc.breathingspace.controllers.BreathingSpaceController.flow14a
