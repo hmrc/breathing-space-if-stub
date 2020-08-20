@@ -32,7 +32,7 @@ class BreathingSpaceControllerISpec extends BaseControllerISpec {
         .addHttpHeaders("Content-Type" -> "application/json")
         .post(data))
 
-      result.status shouldBe Status.BAD_REQUEST
+      result.status shouldBe Status.OK
       val output = result.body.drop(1).dropRight(1)
       UUID.fromString(output) shouldBe a[UUID]
     }
