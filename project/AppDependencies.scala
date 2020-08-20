@@ -17,3 +17,4 @@ object AppDependencies {
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"                 % "test, it"
   )
 }
+  

@@ -20,20 +20,17 @@ import akka.stream.Materializer
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.test.{FakeRequest, Helpers}
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.breathingspace.config.AppConfig
+import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-
 trait BaseControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
-  val env           = Environment.simple()
+  val env = Environment.simple()
   val configuration = Configuration.load(env)
 
   val serviceConfig = new ServicesConfig(configuration)
-  val appConfig     = new AppConfig(configuration, serviceConfig)
 
-  val controller = new BreathingSpaceController(appConfig, Helpers.stubControllerComponents())
+  val controller = new BreathingSpaceController(Helpers.stubControllerComponents())
 
   val fakeRequest = FakeRequest()
 

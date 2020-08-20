@@ -17,17 +17,16 @@
 package uk.gov.hmrc.breathingspace.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.breathingspace.config.AppConfig
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.Future
 
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
 @Singleton
-class HttpErrorController @Inject()(appConfig: AppConfig, cc: ControllerComponents)
-  extends BackendController(cc) {
+class HttpErrorController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
   def customReturn(statusCode: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(new Status(statusCode))
+    Future.successful(new Status(statusCode)(request.toString()))
   }
 }
