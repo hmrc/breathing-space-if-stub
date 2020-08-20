@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package uk.gov.hmrc.breathingspace.controllers
 
 import akka.stream.Materializer
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.StandaloneWSClient
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
-import play.api.{Application, Configuration}
 
 
 abstract class BaseControllerISpec(config: (String, Any)*) extends AnyWordSpec with Matchers with GuiceOneServerPerSuite {

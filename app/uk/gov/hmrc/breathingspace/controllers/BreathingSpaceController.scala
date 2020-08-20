@@ -17,19 +17,17 @@
 package uk.gov.hmrc.breathingspace.controllers
 
 import java.util.UUID
-
 import javax.inject.{Inject, Singleton}
-import play.api.Logging
-import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.breathingspace.config.AppConfig
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.Future
 
+import play.api.Logging
+import play.api.libs.json._
+import play.api.mvc.{Action, ControllerComponents}
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
 @Singleton()
-class BreathingSpaceController @Inject()(appConfig: AppConfig, cc: ControllerComponents)
-    extends BackendController(cc) with Logging {
+class BreathingSpaceController @Inject()(cc: ControllerComponents) extends BackendController(cc) with Logging {
 
   def flow6: Action[JsValue] = Action.async(parse.json) { implicit request =>
     logger.info(s"flow 6: ${request.toString} body=${request.body.toString}")
@@ -45,5 +43,4 @@ class BreathingSpaceController @Inject()(appConfig: AppConfig, cc: ControllerCom
     logger.info(s"flow 14a: ${request.toString} body=${request.body.toString}")
     Future.successful(Ok(""))
   }
-
 }
