@@ -1,8 +1,7 @@
-# microservice specific routes
+GET        /debtor/:nino    uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.getDebtorDetails(nino: String)
 
-GET        /return-me-a     uk.gov.hmrc.breathingspace.controllers.HttpErrorController.customReturn(status: Int)
-POST       /return-me-a     uk.gov.hmrc.breathingspace.controllers.HttpErrorController.customReturn(status: Int)
+POST       /flow-6          uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow6
 
-POST       /flow-6          uk.gov.hmrc.breathingspace.controllers.BreathingSpaceController.flow6
-PUT        /flow-12         uk.gov.hmrc.breathingspace.controllers.BreathingSpaceController.flow12
-DELETE     /flow-14a        uk.gov.hmrc.breathingspace.controllers.BreathingSpaceController.flow14a
+PUT        /flow-12         uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow12
+
+DELETE     /flow-14a        uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow14a
