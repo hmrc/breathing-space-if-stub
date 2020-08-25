@@ -14,21 +14,41 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspace.controllers
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import java.util.UUID
 
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.breathingspaceifstub.repository.DebtorRepository
 
 class BreathingSpaceControllerISpec extends BaseControllerISpec {
 
-  "POST to /breathing-space/flow-6" should {
+  "GET /debtor/:nino" should {
+    "return NotFound(404) when the Nino is unknown" in {
+      val result = await(ws.url(s"http://localhost:$port/breathing-space-if-stub/debtor/OT123456B").get)
+      result.status shouldBe Status.NOT_FOUND
+    }
 
+    "return UnprocessableEntity(422) when the Nino is invalid" in {
+      val result = await(ws.url(s"http://localhost:$port/breathing-space-if-stub/debtor/1234").get)
+      result.status shouldBe Status.UNPROCESSABLE_ENTITY
+    }
+
+    "return debtor details when the Nino is valid" in {
+      val nino = DebtorRepository.debtors.head._1
+      val debtor = DebtorRepository.debtors.head._2
+      val result = await(ws.url(s"http://localhost:$port/breathing-space-if-stub/debtor/${nino}").get)
+      result.status shouldBe Status.OK
+      Json.parse(result.body) shouldBe debtor
+    }
+  }
+
+  "POST to /breathing-space/flow-6" should {
     "return 200" in {
       val data = Json.obj()
-      val result = await(ws.url(s"http://localhost:$port/breathing-space/flow-6")
+      val result = await(ws.url(s"http://localhost:$port/breathing-space-if-stub/flow-6")
         .addHttpHeaders("Content-Type" -> "application/json")
         .post(data))
 
@@ -38,8 +58,7 @@ class BreathingSpaceControllerISpec extends BaseControllerISpec {
     }
 
     "return 400" in {
-
-      val result = await(ws.url(s"http://localhost:$port/breathing-space/flow-6")
+      val result = await(ws.url(s"http://localhost:$port/breathing-space-if-stub/flow-6")
         .addHttpHeaders("Content-Type" -> "application/json")
         .post(""))
 
@@ -47,13 +66,10 @@ class BreathingSpaceControllerISpec extends BaseControllerISpec {
     }
 
     "return 415" in {
-
-      val result = await(ws.url(s"http://localhost:$port/breathing-space/flow-6")
+      val result = await(ws.url(s"http://localhost:$port/breathing-space-if-stub/flow-6")
         .post(""))
 
       result.status shouldBe Status.UNSUPPORTED_MEDIA_TYPE
     }
-
-
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspace.controllers
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import java.util.UUID
 

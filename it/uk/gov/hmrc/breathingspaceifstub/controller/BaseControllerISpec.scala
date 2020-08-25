@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspace.controllers
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import akka.stream.Materializer
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.{Configuration, Environment}
-import play.api.test.{FakeRequest, Helpers}
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.{Application, Configuration}
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.ws.StandaloneWSClient
+import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
-trait BaseControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
-  val env = Environment.simple()
-  val configuration = Configuration.load(env)
 
-  val serviceConfig = new ServicesConfig(configuration)
+abstract class BaseControllerISpec(config: (String, Any)*) extends AnyWordSpec with Matchers with GuiceOneServerPerSuite {
 
-  val controller = new BreathingSpaceController(Helpers.stubControllerComponents())
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(config: _*)
+    .build()
 
-  val fakeRequest = FakeRequest()
+  implicit val configuration: Configuration = app.configuration
 
   protected implicit val materializer: Materializer = app.materializer
 
+  implicit val ws: StandaloneWSClient = StandaloneAhcWSClient()
 }

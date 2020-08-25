@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspace.controllers
+package uk.gov.hmrc.breathingspaceifstub.model
 
-import javax.inject.{Inject, Singleton}
+import play.api.libs.json.Json
 
-import scala.concurrent.Future
+case class Debtor(nino: String, firstName: String, lastName: String, dateOfBirth: String)
 
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-
-@Singleton
-class HttpErrorController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
-
-  def customReturn(statusCode: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(new Status(statusCode)(request.toString()))
-  }
+object Debtor {
+  implicit val format = Json.format[Debtor]
 }
