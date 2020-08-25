@@ -1,4 +1,4 @@
-GET        /debtor/:nino    uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.getDebtorDetails(nino: String)
+GET        /debtor/:nino    uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.retrieveDebtorDetails(nino: String)
 
 POST       /flow-6          uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow6
 
