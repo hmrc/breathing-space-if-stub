@@ -45,7 +45,7 @@ class BreathingSpaceController @Inject()(cc: ControllerComponents)(implicit val 
 
     exceptionHandler {
       withValidNino(nino) { _ =>
-        logger.debug(s"Retrieving Debtor Details for Nino($nino)")
+        logger.debug(s"Retrieving Debtor Details for Nino($nino)!")
         Future.successful {
           DebtorRepository.get(nino).fold(debtorNotFound)(debtorFound)
         }
