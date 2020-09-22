@@ -18,7 +18,6 @@ package uk.gov.hmrc.breathingspaceifstub.model
 
 import java.time.{LocalDate, ZonedDateTime}
 
-import cats.syntax.option._
 import play.api.libs.json.Json
 
 final case class RequestPeriod(startDate: LocalDate, endDate: Option[LocalDate], pegaRequestTimestamp: ZonedDateTime)
@@ -26,10 +25,5 @@ final case class RequestPeriod(startDate: LocalDate, endDate: Option[LocalDate],
 object RequestPeriod {
   implicit val reads = Json.format[RequestPeriod]
 
-  def apply(period: Period): RequestPeriod =
-    new RequestPeriod(
-      period.startDate,
-      period.endDate.some,
-      ZonedDateTime.now
-    )
+  def apply(period: Period): RequestPeriod = new RequestPeriod(period.startDate, period.endDate, ZonedDateTime.now)
 }

@@ -21,7 +21,7 @@ import java.util.UUID
 
 import play.api.libs.json.Json
 
-final case class Period(periodId: UUID, startDate: LocalDate, endDate: LocalDate)
+final case class Period(periodId: UUID, startDate: LocalDate, endDate: Option[LocalDate])
 
 object Period {
   implicit val format = Json.format[Period]
@@ -30,6 +30,6 @@ object Period {
     new Period(
       UUID.randomUUID(),
       requestPeriod.startDate,
-      requestPeriod.endDate.fold(requestPeriod.startDate.plusDays(60))(identity)
+      requestPeriod.endDate
     )
 }

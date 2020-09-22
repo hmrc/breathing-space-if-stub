@@ -46,7 +46,7 @@ class PeriodsControllerISpec extends BaseISpec {
 
       val period = (contentAsJson(result) \ "periods").as[Periods].head
       period.startDate shouldBe requestPeriod.startDate
-      period.endDate.some shouldBe requestPeriod.endDate
+      period.endDate shouldBe requestPeriod.endDate
     }
 
     "return 201(CREATED) with an empty 'periods' list when the Nino is valid and found in the DB with same periods provided" in {

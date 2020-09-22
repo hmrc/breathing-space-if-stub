@@ -22,6 +22,7 @@ import javax.inject.{Inject, Singleton}
 
 import scala.collection.mutable
 
+import cats.syntax.option._
 import uk.gov.hmrc.breathingspaceifstub._
 import uk.gov.hmrc.breathingspaceifstub.model.{Nino, Period}
 
@@ -64,5 +65,5 @@ class PeriodsRepository @Inject()(debtorRepository: DebtorRepository) {
     )
 
   def genOnePeriodList(ix: Int, startDate: LocalDate = LocalDate.of(2020, 1, 1)): Periods =
-    List(Period(UUID.randomUUID(), startDate.plusDays(ix), startDate.plusMonths(2)))
+    List(Period(UUID.randomUUID(), startDate.plusDays(ix), startDate.plusMonths(2).some))
 }
