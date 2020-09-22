@@ -56,6 +56,8 @@ class PeriodsRepository @Inject()(debtorRepository: DebtorRepository) {
       }
   }
 
+  def get(nino: Nino): Option[Periods] = monitor.synchronized(store.get(nino))
+
   private def filterOutPeriodsIfSameDates(periods: Periods, periodsToAdd: Periods): Periods =
     periodsToAdd.filter(
       periodToAdd =>
