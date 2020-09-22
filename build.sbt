@@ -10,7 +10,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
     majorVersion             := 0,
-    scalaVersion             := "2.12.11",
+    scalaVersion             := "2.12.12",
     PlayKeys.playDefaultPort := 9601,
     libraryDependencies      ++= AppDependencies.compile ++ AppDependencies.test,
     // ***************
@@ -34,10 +34,11 @@ lazy val microservice = Project(appName, file("."))
 
 scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
 
+unmanagedResourceDirectories in IntegrationTest += baseDirectory.value / "it" / "resources"
+
 lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageExcludedPackages := List(
     "<empty>",
-    "uk\\.gov\\.hmrc\\.breathingspaceifproxy\\.views\\..*",
     ".*(Reverse|AuthService|BuildInfo|Routes).*"
   ).mkString(";"),
   coverageMinimum := 96,

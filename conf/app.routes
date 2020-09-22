@@ -1,7 +1,1 @@
-GET        /debtor/:nino    uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.retrieveDebtorDetails(nino: String)
-
-POST       /flow-6          uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow6
-
-PUT        /flow-12         uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow12
-
-DELETE     /flow-14a        uk.gov.hmrc.breathingspaceifstub.controller.BreathingSpaceController.flow14a
+POST    /v1/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.PeriodsController.post(nino: String)
