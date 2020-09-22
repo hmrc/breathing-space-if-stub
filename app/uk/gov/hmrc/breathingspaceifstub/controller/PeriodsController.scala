@@ -39,6 +39,14 @@ class PeriodsController @Inject()(
     extends BackendController(cc)
     with RequestValidation {
 
+  def get(maybeNino: String): Action[AnyContent] = Action.async { implicit request =>
+    (
+      validateHeaders,
+      validateNino(maybeNino)
+    ).mapN((_, nino) => nino)
+      .fold(ErrorResponse(BAD_REQUEST, _).value, processGet(_))
+  }
+
   def post(maybeNino: String): Action[AnyContent] = Action.async { implicit request =>
     (
       validateHeaders,
@@ -46,6 +54,11 @@ class PeriodsController @Inject()(
       validateBody[CreatePeriodsRequest]
     ).mapN((_, nino, cpr) => nino -> cpr)
       .fold(ErrorResponse(BAD_REQUEST, _).value, kv => processPost(kv._1, kv._2))
+  }
+
+  def processGet(nino: Nino)(implicit request: Request[_]): Future[Result] = {
+    logger.debug(s"Retrieving Periods for Nino($nino)")
+    periodsRepo.get(nino).fold(ErrorResponse(NOT_FOUND, RESOURCE_NOT_FOUND).value)(sendResponse(OK, _))
   }
 
   def processPost(nino: Nino, cpr: CreatePeriodsRequest)(implicit request: Request[_]): Future[Result] = {

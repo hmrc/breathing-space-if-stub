@@ -32,6 +32,24 @@ class PeriodsControllerISpec extends BaseISpec {
   val periodsRepo = app.injector.instanceOf[PeriodsRepository]
   val periodsStore = periodsRepo.store
 
+  "GET /v1/:nino/periods" should {
+
+    "return 200(OK) with the periods when the Nino is valid and found in the DB" in {
+      val nino = periodsStore.head._1
+      val Some(result) = route(app, requestWithHeaders(GET, s"$localContext/v1/${nino.nino}/periods"))
+
+      val expectedPeriods = Json.toJson(periodsStore.head._2).toString
+
+      status(result) shouldBe Status.OK
+      (contentAsJson(result) \ "periods").get.toString shouldBe expectedPeriods
+    }
+
+    "return 404(NOT_FOUND) the Nino is valid but was not found in the DB" in {
+      val Some(result) = route(app, requestWithHeaders(GET, s"$localContext/v1/MZ006527C/periods"))
+      status(result) shouldBe Status.NOT_FOUND
+    }
+  }
+
   "POST /v1/:nino/periods" should {
 
     "return 201(CREATED) with the new periods when the Nino is valid and found in the DB" in {
