@@ -37,15 +37,17 @@ trait RequestValidation extends PlayController with Logging {
     if (DomainNino.isValid(maybeNino)) Nino(maybeNino).validNec
     else INVALID_PAYLOAD.invalidNec
 
-  def validateHeaders(implicit request: Request[_]): Validation[Unit] = {
+  def validateHeaders(implicit request: Request[_]): Validation[Unit] =
+    /*
     val headers = request.headers
     (
       validateContentType(request),
       validateCorrelationId(headers),
       validateRequestType(headers),
-      validateStaffId(headers)
+      validateUserId(headers)
     ).mapN((_, _, _, _) => unit)
-  }
+     */
+    unit.validNec
 
   def validateBody[T](implicit request: Request[AnyContent], reads: Reads[T]): Validation[T] =
     if (!request.hasBody) INVALID_PAYLOAD.invalidNec
@@ -99,16 +101,16 @@ trait RequestValidation extends PlayController with Logging {
           }
       }
 
-  private val staffIdRegex = "^[0-9]{7}$".r
+  private val userIdRegex = "^[0-9]{7}$".r
 
-  private def validateStaffId(headers: Headers): Validation[Unit] =
+  private def validateUserId(headers: Headers): Validation[Unit] =
     headers
       .get(Header.UserId)
       .fold[Validation[Unit]] {
         INVALID_USERID.invalidNec
-      } { staffId =>
-        staffIdRegex
-          .findFirstIn(staffId)
+      } { userId =>
+        userIdRegex
+          .findFirstIn(userId)
           .fold[Validation[Unit]] {
             INVALID_USERID.invalidNec
           } { _ =>
