@@ -37,17 +37,15 @@ trait RequestValidation extends PlayController with Logging {
     if (DomainNino.isValid(maybeNino)) Nino(maybeNino).validNec
     else INVALID_PAYLOAD.invalidNec
 
-  def validateHeaders(implicit request: Request[_]): Validation[Unit] =
-    /*
+  def validateHeaders(implicit request: Request[_]): Validation[Unit] = {
     val headers = request.headers
     (
       validateContentType(request),
       validateCorrelationId(headers),
-      validateRequestType(headers),
-      validateUserId(headers)
-    ).mapN((_, _, _, _) => unit)
-     */
-    unit.validNec
+      validateRequestType(headers)
+    ).mapN((_, _, requestType) => requestType)
+      .andThen(validateUserIdForRequestType(_, headers.get(Header.UserId)))
+  }
 
   def validateBody[T](implicit request: Request[AnyContent], reads: Reads[T]): Validation[T] =
     if (!request.hasBody) INVALID_PAYLOAD.invalidNec
@@ -86,37 +84,32 @@ trait RequestValidation extends PlayController with Logging {
           )
       }
 
-  private def validateRequestType(headers: Headers): Validation[Unit] =
+  private def validateRequestType(headers: Headers): Validation[Attended] =
     headers
       .get(Header.OriginatorId)
-      .fold[Validation[Unit]] {
+      .fold[Validation[Attended]] {
         INVALID_ORIGINATORID.invalidNec
       } { requestType =>
         Attended
           .withNameOption(requestType.toUpperCase)
-          .fold[Validation[Unit]] {
+          .fold[Validation[Attended]] {
             INVALID_ORIGINATORID.invalidNec
-          } { _ =>
-            unit.validNec
-          }
+          } { _.validNec }
       }
 
-  private val userIdRegex = "^[0-9]{7}$".r
+  private def validateUserIdForRequestType(requestType: Attended, userId: Option[String]): Validation[Unit] =
+    userId.fold {
+      if (requestType == Attended.DS2_BS_ATTENDED) INVALID_USERID.invalidNec else unit.validNec
+    } { userId =>
+      if (verifyUserIdError(requestType, userId)) INVALID_USERID.invalidNec else unit.validNec
+    }
 
-  private def validateUserId(headers: Headers): Validation[Unit] =
-    headers
-      .get(Header.UserId)
-      .fold[Validation[Unit]] {
-        INVALID_USERID.invalidNec
-      } { userId =>
-        userIdRegex
-          .findFirstIn(userId)
-          .fold[Validation[Unit]] {
-            INVALID_USERID.invalidNec
-          } { _ =>
-            unit.validNec
-          }
-      }
+  private val userIdRegex = "^[0-9]{7}$".r.pattern
+
+  private def verifyUserIdError(requestType: Attended, userId: String): Boolean =
+    requestType == Attended.DS2_BS_UNATTENDED || (
+      requestType == Attended.DS2_BS_ATTENDED && !userIdRegex.matcher(userId).matches
+    )
 
   private def createErrorFromInvalidPayload[B](throwable: Throwable)(implicit request: Request[_]): Validation[B] = {
     val correlationId = implicitly[CorrelationId]
