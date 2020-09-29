@@ -38,16 +38,14 @@ object Error extends Enum[Error] {
     )
 
   case object BAD_GATEWAY extends Error("Dependent systems are currently not responding.")
+  case object HEADERS_PRECONDITION_NOT_MET extends Error("Submission has not passed validation. Invalid headers.")
   case object INVALID_CORRELATIONID extends Error("Submission has not passed validation. Invalid header CorrelationId.")
   case object INVALID_ORIGINATORID extends Error("Submission has not passed validation. Invalid header OriginatorId.")
   case object INVALID_USERID extends Error("Submission has not passed validation. Invalid header UserId.")
-  case object HEADERS_PRECONDITION_NOT_MET extends Error("Submission has not passed validation. Invalid headers.")
   case object INVALID_PAYLOAD extends Error("Submission has not passed validation. Invalid payload.")
   case object RESOURCE_NOT_FOUND extends Error("The remote endpoint has indicated that the resource was not found.")
   case object SERVER_ERROR extends Error("IF is experiencing problems that require live service intervention.")
   case object SERVICE_UNAVAILABLE extends Error("Dependent systems are currently not responding.")
-  case object UNPROCESSABLE_ENTITY extends Error("Submission cannot be processed. The resource already exists.")
-  case object UNSUPPORTED_MEDIA_TYPE extends Error("Content-type should be \"application/json\".")
 
   override val values = findValues
 }
