@@ -28,7 +28,7 @@ import play.api.http.HeaderNames.CONTENT_TYPE
 import play.api.http.MimeTypes
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsEmpty
-import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import play.api.test.{DefaultAwaitTimeout, FakeRequest, Injecting}
 import uk.gov.hmrc.breathingspaceifstub._
 import uk.gov.hmrc.breathingspaceifstub.model.Attended
 
@@ -38,6 +38,7 @@ trait BaseISpec
     with Futures
     with GuiceOneServerPerSuite
     with Matchers
+    with Injecting
     with OptionValues {
 
   implicit lazy val materializer: Materializer = app.materializer
@@ -45,7 +46,7 @@ trait BaseISpec
   lazy val statefulLocalContext: String = "/breathing-space/api"
   lazy val statelessLocalContext: String = "/breathing-space-stateless/api"
 
-  lazy val wsClient: WSClient = fakeApplication.injector.instanceOf[WSClient]
+  lazy val wsClient: WSClient = inject[WSClient]
 
   lazy val testServerAddress = s"http://localhost:$port"
 
