@@ -1,4 +1,5 @@
-# Add all the application routes to the app.routes file
-->         /breathing-space/api   app.Routes
-->         /                      health.Routes
-GET        /admin/metrics         com.kenshoo.play.metrics.MetricsController.metrics
+# Add all the application routes to the stateful.routes file
+->         /breathing-space/api             stateful.Routes
+->         /breathing-space-stateless/api   stateless.Routes
+->         /                                health.Routes
+GET        /admin/metrics                   com.kenshoo.play.metrics.MetricsController.metrics
