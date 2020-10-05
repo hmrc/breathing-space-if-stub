@@ -26,6 +26,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.HeaderNames.CONTENT_TYPE
 import play.api.http.MimeTypes
+import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.breathingspaceifstub._
@@ -41,7 +42,12 @@ trait BaseISpec
 
   implicit lazy val materializer: Materializer = app.materializer
 
-  lazy val localContext: String = "/breathing-space/api"
+  lazy val statefulLocalContext: String = "/breathing-space/api"
+  lazy val statelessLocalContext: String = "/breathing-space-stateless/api"
+
+  lazy val wsClient: WSClient = fakeApplication.injector.instanceOf[WSClient]
+
+  lazy val testServerAddress = s"http://localhost:$port"
 
   lazy val correlationId = UUID.randomUUID().toString
 

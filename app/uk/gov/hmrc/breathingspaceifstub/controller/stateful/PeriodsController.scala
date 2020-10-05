@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspaceifstub.controller
+package uk.gov.hmrc.breathingspaceifstub.controller.stateful
 
 import javax.inject.{Inject, Singleton}
 
@@ -25,6 +25,7 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.breathingspaceifstub.{Header, Periods}
+import uk.gov.hmrc.breathingspaceifstub.controller.RequestValidation
 import uk.gov.hmrc.breathingspaceifstub.model._
 import uk.gov.hmrc.breathingspaceifstub.model.Error.RESOURCE_NOT_FOUND
 import uk.gov.hmrc.breathingspaceifstub.repository.{DebtorRepository, PeriodsRepository}

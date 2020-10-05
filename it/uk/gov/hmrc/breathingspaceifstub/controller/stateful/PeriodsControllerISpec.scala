@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspaceifstub.controller
+package uk.gov.hmrc.breathingspaceifstub.controller.stateful
 
 import java.time.{LocalDate, ZonedDateTime}
 
@@ -36,7 +36,7 @@ class PeriodsControllerISpec extends BaseISpec {
 
     "return 200(OK) with the periods when the Nino is valid and found in the DB" in {
       val nino = periodsStore.head._1
-      val Some(result) = route(app, requestWithHeaders(GET, s"$localContext/v1/${nino.nino}/periods"))
+      val Some(result) = route(app, requestWithHeaders(GET, s"$statefulLocalContext/v1/${nino.nino}/periods"))
 
       val expectedPeriods = Json.toJson(periodsStore.head._2).toString
 
@@ -45,7 +45,7 @@ class PeriodsControllerISpec extends BaseISpec {
     }
 
     "return 404(NOT_FOUND) the Nino is valid but was not found in the DB" in {
-      val Some(result) = route(app, requestWithHeaders(GET, s"$localContext/v1/MZ006527C/periods"))
+      val Some(result) = route(app, requestWithHeaders(GET, s"$statefulLocalContext/v1/MZ006527C/periods"))
       status(result) shouldBe Status.NOT_FOUND
     }
   }
@@ -56,7 +56,7 @@ class PeriodsControllerISpec extends BaseISpec {
       val nino = periodsStore.head._1
       val requestPeriod = RequestPeriod(LocalDate.now, LocalDate.now.some, ZonedDateTime.now)
       val requestPeriods = Json.obj("periods" -> Json.toJson(List(requestPeriod)))
-      val request = requestWithHeaders(POST, s"$localContext/v1/${nino.nino}/periods")
+      val request = requestWithHeaders(POST, s"$statefulLocalContext/v1/${nino.nino}/periods")
         .withJsonBody(requestPeriods)
 
       val Some(result) = route(app, request)
@@ -71,7 +71,7 @@ class PeriodsControllerISpec extends BaseISpec {
       val nino = periodsStore.head._1
       val expectedPeriods = periodsStore.head._2
       val requestPeriods = Json.obj("periods" -> Json.toJson(expectedPeriods.map(RequestPeriod(_))))
-      val request = requestWithHeaders(POST, s"$localContext/v1/${nino.nino}/periods")
+      val request = requestWithHeaders(POST, s"$statefulLocalContext/v1/${nino.nino}/periods")
         .withJsonBody(requestPeriods)
 
       val Some(result) = route(app, request)
@@ -83,7 +83,7 @@ class PeriodsControllerISpec extends BaseISpec {
     "return 404(NOT_FOUND) the Nino is valid but was not found in the DB" in {
       val ignored = periodsStore.head._2
       val requestPeriods = Json.obj("periods" -> Json.toJson(ignored.map(RequestPeriod(_))))
-      val request = requestWithHeaders(POST, s"$localContext/v1/MZ006527C/periods")
+      val request = requestWithHeaders(POST, s"$statefulLocalContext/v1/MZ006527C/periods")
         .withJsonBody(requestPeriods)
 
       val Some(result) = route(app, request)
