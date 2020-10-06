@@ -2,6 +2,16 @@
 
 This is a stub implementation of the EIS Integration Framework backend for the Breathing Space program.
 
+## Sample Curl microservice commands
+
+Get BS Periods
+
+    'https://breathing-space-if-stub.protected.mdtp/breathing-space-stateless/api/v1/BS000005A/periods' --header 'CorrelationId: 75e4cdc2-eecb-11ea-913a-0a9f09f70a70' --header 'OriginatorId: DS2_BS_UNATTENDED' --header 'UserId: 0000000'
+
+Post Bs Periods
+
+    --request POST 'https://breathing-space-if-stub.protected.mdtp/breathing-space-stateless/api/v1/BS000502A/periods' --header 'CorrelationId: 75e4cdc2-eecb-11ea-913a-0a9f09f70a70' --header 'OriginatorId: DS2_BS_UNATTENDED' --header 'UserId: 0000000' --header 'Content-Type: application/json' --data-raw '{"periods":[{"startDate":"2020-05-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}'
+
 ## Stateless Endpoints
 The stateless endpoint always return the same response for the same request made.
 

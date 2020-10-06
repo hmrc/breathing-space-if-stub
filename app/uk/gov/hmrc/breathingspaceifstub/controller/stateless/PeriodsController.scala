@@ -23,6 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.io.Source
 import scala.util.Try
 
+import play.api.Logging
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.mvc._
@@ -53,7 +54,7 @@ class PeriodsController @Inject()(
   }
 }
 
-object PeriodsController extends Results {
+object PeriodsController extends Results with Logging {
   def getAcceptedNinoHandler(nino: String, request: Request[AnyContent]): Future[Result] =
     nino match {
       case "BS000001A" => sendResponse(200, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
@@ -70,6 +71,7 @@ object PeriodsController extends Results {
         sendResponse(400)
 
       case Some(jsValue) =>
+        logger.info(s"BS-STUB >> REQUEST: = POST ${request.uri} BODY: = ${jsValue.toString()}")
         transformRequestJsonToResponseJson(jsValue) match {
           case JsError(_) => sendResponse(400)
           case JsSuccess(jsObject, _) => sendResponse(201, Some(jsObject))
