@@ -21,7 +21,7 @@ import java.util.UUID
 
 import play.api.libs.json.Json
 
-final case class Period(periodId: UUID, startDate: LocalDate, endDate: Option[LocalDate])
+final case class Period(periodID: UUID, startDate: LocalDate, endDate: Option[LocalDate])
 
 object Period {
   implicit val format = Json.format[Period]

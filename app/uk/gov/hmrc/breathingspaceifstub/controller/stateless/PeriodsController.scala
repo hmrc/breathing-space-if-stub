@@ -84,7 +84,7 @@ object PeriodsController extends Results with Logging {
         case JsArray(values) =>
           val updatedValues = values.map { period =>
             val retainedFields = period.as[JsObject].fields.filter(_._1 != "pegaRequestTimestamp")
-            JsObject(Seq(("periodId", JsString(UUID.randomUUID().toString))) ++ retainedFields)
+            JsObject(Seq(("periodID", JsString(UUID.randomUUID().toString))) ++ retainedFields)
           }
 
           JsArray(updatedValues)
