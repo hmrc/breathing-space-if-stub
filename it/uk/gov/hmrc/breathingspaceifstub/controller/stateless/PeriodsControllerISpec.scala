@@ -75,6 +75,11 @@ class PeriodsControllerISpec extends BaseISpec {
       response.status shouldBe Status.INTERNAL_SERVER_ERROR
     }
 
+    "return 500(SERVER_ERROR) when the Nino 'BS0005R0B' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("BS0005R0B"))
+      response.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
     "return 502(BAD_GATEWAY) when the Nino 'BS000502B' is sent" in {
       val response = makeGetRequest(getConnectionUrl("BS000502B"))
       response.status shouldBe Status.BAD_GATEWAY
@@ -160,8 +165,60 @@ class PeriodsControllerISpec extends BaseISpec {
     }
   }
 
+  "PUT /v1/:nino/periods" should {
+
+    "return 200(OK) with the periods sent when any accepted Nino value is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000400A"),
+        """{"periods":[{"periodID": "4043d4b5-1f2a-4d10-8878-ef1ce9d97b32", "startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"periodID": "6aed4f02-f652-4bef-af14-49c79e968c2e", "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
+      response.status shouldBe Status.OK
+    }
+
+    "return 400(BAD_REQUEST) when the request is sent without json body" in {
+      val response = await(wsClient.url(getConnectionUrl("BS000400A")).put(""))
+      response.status shouldBe Status.BAD_REQUEST
+    }
+
+    "return 400(BAD_REQUEST) when the request is sent with invalid json body" in {
+      val response = makePutRequest(getConnectionUrl("BS000400A"), """{"notWhatWeAreExpecting":"certainlyNot"}""")
+      response.status shouldBe Status.BAD_REQUEST
+    }
+
+    "return 400(BAD_REQUEST) when the Nino 'BS000400B' is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000400B"))
+      response.status shouldBe Status.BAD_REQUEST
+    }
+
+    "return 409(CONFLICT) when the Nino 'BS000409B' is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000409B"))
+      response.status shouldBe Status.CONFLICT
+    }
+
+    "return 428(PRECONDITION_REQUIRED) when the Nino 'BS000428B' is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000428B"))
+      response.status shouldBe Status.PRECONDITION_REQUIRED
+    }
+
+    "return 500(SERVER_ERROR) when the Nino 'BS000500B' is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000500B"))
+      response.status shouldBe Status.INTERNAL_SERVER_ERROR
+    }
+
+    "return 502(BAD_GATEWAY) when the Nino 'BS000502B' is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000502B"))
+      response.status shouldBe Status.BAD_GATEWAY
+    }
+
+    "return 503(SERVICE_UNAVAILABLE) when the Nino 'BS000503B' is sent" in {
+      val response = makePutRequest(getConnectionUrl("BS000503B"))
+      response.status shouldBe Status.SERVICE_UNAVAILABLE
+    }
+  }
+
+  private def makePutRequest(connectionUrl: String, bodyContents: String = "{}") =
+    await(wsClient.url(connectionUrl).put(Json.parse(bodyContents)))
+
   private def makePostRequest(connectionUrl: String, bodyContents: String = "{}") =
-    await(wsClient.url(connectionUrl).post(Json.parse(bodyContents))) //
+    await(wsClient.url(connectionUrl).post(Json.parse(bodyContents)))
 
   private def makeGetRequest(connectionUrl: String) =
     await(wsClient.url(connectionUrl).get())

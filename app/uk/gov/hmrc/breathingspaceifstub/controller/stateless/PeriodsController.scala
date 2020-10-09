@@ -24,6 +24,7 @@ import scala.io.Source
 import scala.util.Try
 
 import play.api.Logging
+import play.api.http.Status._
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.mvc._
@@ -43,48 +44,56 @@ class PeriodsController @Inject()(
 
   import PeriodsController._
 
-  // TODO: Add logging of incoming request
-
   def get(nino: String): Action[AnyContent] = Action.async { implicit request =>
     composeResponse(nino.toUpperCase, getAcceptedNinoHandler)
   }
 
   def post(nino: String): Action[AnyContent] = Action.async { implicit request =>
-    composeResponse(nino.toUpperCase, postAcceptedNinoHandler)
+    composeResponse(nino.toUpperCase, withBodyAcceptedNinoHandler(CREATED, true))
+  }
+
+  def put(nino: String): Action[AnyContent] = Action.async { implicit request =>
+    composeResponse(nino.toUpperCase, withBodyAcceptedNinoHandler(OK, false))
   }
 }
 
 object PeriodsController extends Results with Logging {
   def getAcceptedNinoHandler(nino: String, request: Request[AnyContent]): Future[Result] =
     nino match {
-      case "BS000001A" => sendResponse(200, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
-      case "BS000002A" => sendResponse(200, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))
-      case "BS000003A" => sendResponse(200, Some(jsonDataFromFile("multipleBsPeriodsFullPopulation.json")))
-      case "BS000004A" => sendResponse(200, Some(jsonDataFromFile("multipleBsPeriodsPartialPopulation.json")))
-      case "BS000005A" => sendResponse(200, Some(jsonDataFromFile("multipleBsPeriodsMixedPopulation.json")))
-      case _ => sendResponse(200, Some(Json.parse("""{"periods" :[]}""")))
+      case "BS000001A" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
+      case "BS000002A" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))
+      case "BS000003A" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsFullPopulation.json")))
+      case "BS000004A" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsPartialPopulation.json")))
+      case "BS000005A" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsMixedPopulation.json")))
+      case _ => sendResponse(OK, Some(Json.parse("""{"periods" :[]}""")))
     }
 
-  def postAcceptedNinoHandler(nino: String, request: Request[AnyContent]): Future[Result] =
+  def withBodyAcceptedNinoHandler(
+    httpSuccessCode: Int,
+    addPeriodIdField: Boolean
+  )(nino: String, request: Request[AnyContent]): Future[Result] =
     request.body.asJson match {
       case None =>
-        sendResponse(400)
+        sendResponse(BAD_REQUEST)
 
       case Some(jsValue) =>
         logger.info(s"BS-STUB >> REQUEST: = POST ${request.uri} BODY: = ${jsValue.toString()}")
-        transformRequestJsonToResponseJson(jsValue) match {
-          case JsError(_) => sendResponse(400)
-          case JsSuccess(jsObject, _) => sendResponse(201, Some(jsObject))
+        transformRequestJsonToResponseJson(jsValue, addPeriodIdField) match {
+          case JsError(_) => sendResponse(BAD_REQUEST)
+          case JsSuccess(jsObject, _) => sendResponse(httpSuccessCode, Some(jsObject))
         }
     }
 
-  def transformRequestJsonToResponseJson(jsValue: JsValue): JsResult[JsObject] = {
+  def transformRequestJsonToResponseJson(jsValue: JsValue, addPeriodIdField: Boolean): JsResult[JsObject] = {
     val attrTransformer = (__ \ "periods").json.update {
       __.read[JsArray].map {
         case JsArray(values) =>
           val updatedValues = values.map { period =>
             val retainedFields = period.as[JsObject].fields.filter(_._1 != "pegaRequestTimestamp")
-            JsObject(Seq(("periodID", JsString(UUID.randomUUID().toString))) ++ retainedFields)
+            val additionalFields =
+              if (addPeriodIdField) Seq(("periodID", JsString(UUID.randomUUID().toString))) else Seq.empty
+
+            JsObject(additionalFields ++ retainedFields)
           }
 
           JsArray(updatedValues)
@@ -110,8 +119,8 @@ object PeriodsController extends Results with Logging {
   }
 
   def extractErrorStatusFromNino(nino: String): Int = {
-    val requestedResponseCode = Try(nino.substring(5, 8).toInt).getOrElse(500)
-    if (requestedResponseCode < 200 || requestedResponseCode > 599) 500 else requestedResponseCode
+    val requestedResponseCode = Try(nino.substring(5, 8).toInt).getOrElse(INTERNAL_SERVER_ERROR)
+    if (requestedResponseCode < 200 || requestedResponseCode > 599) INTERNAL_SERVER_ERROR else requestedResponseCode
   }
 
   def jsonDataFromFile(filename: String): JsValue = {
