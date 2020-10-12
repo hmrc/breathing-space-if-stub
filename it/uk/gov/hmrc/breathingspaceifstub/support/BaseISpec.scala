@@ -43,8 +43,8 @@ trait BaseISpec
 
   implicit lazy val materializer: Materializer = app.materializer
 
-  lazy val statefulLocalContext: String = "/breathing-space"
-  lazy val statelessLocalContext: String = "/breathing-space-stateless"
+  lazy val statefulLocalContext: String = "/individuals/breathing-space"
+  lazy val statelessLocalContext: String = "/individuals/breathing-space-stateless"
 
   lazy val wsClient: WSClient = inject[WSClient]
 
