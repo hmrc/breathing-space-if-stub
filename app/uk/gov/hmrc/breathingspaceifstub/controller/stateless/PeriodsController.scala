@@ -29,6 +29,7 @@ import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.mvc._
 import play.mvc.Http.MimeTypes
+import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.controller.RequestValidation
 import uk.gov.hmrc.breathingspaceifstub.repository.{DebtorRepository, PeriodsRepository}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -58,7 +59,7 @@ class PeriodsController @Inject()(
 }
 
 object PeriodsController extends Results with Logging {
-  def getAcceptedNinoHandler(nino: String, request: Request[AnyContent]): Future[Result] =
+  def getAcceptedNinoHandler(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
     nino match {
       case "BS000001A" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
       case "BS000002A" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))
@@ -71,7 +72,7 @@ object PeriodsController extends Results with Logging {
   def withBodyAcceptedNinoHandler(
     httpSuccessCode: Int,
     addPeriodIdField: Boolean
-  )(nino: String, request: Request[AnyContent]): Future[Result] =
+  )(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
     request.body.asJson match {
       case None =>
         sendResponse(BAD_REQUEST)
@@ -103,19 +104,29 @@ object PeriodsController extends Results with Logging {
     jsValue.transform(attrTransformer)
   }
 
-  def composeResponse(nino: String, acceptedHandler: (String, Request[AnyContent]) => Future[Result])(
+  def composeResponse(nino: String, acceptedHandler: (String) => Future[Result])(
     implicit request: Request[AnyContent]
   ): Future[Result] =
     (nino.take(2), nino.lastOption) match {
       case ("BS", Some('B')) => // a bad nino
         sendResponse(extractErrorStatusFromNino(nino))
 
-      case _ => acceptedHandler(nino, request)
+      case _ => acceptedHandler(nino)
     }
 
-  def sendResponse(httpCode: Int, responseBody: Option[JsValue] = None): Future[Result] = {
+  def sendResponse(httpCode: Int, responseBody: Option[JsValue] = None)(
+    implicit request: Request[AnyContent]
+  ): Future[Result] = {
     val body = responseBody.getOrElse(Json.obj("response" -> s"MDTP IF Stub returning '${httpCode}' as requested"))
-    Future.successful(Status(httpCode)(body).as(MimeTypes.JSON))
+    val requestHeaderMap = request.headers.headers.toMap
+
+    Future.successful(
+      Status(httpCode)(body)
+        .withHeaders(
+          Header.CorrelationId -> requestHeaderMap.getOrElse(Header.CorrelationId, UUID.randomUUID().toString)
+        )
+        .as(MimeTypes.JSON)
+    )
   }
 
   def extractErrorStatusFromNino(nino: String): Int = {

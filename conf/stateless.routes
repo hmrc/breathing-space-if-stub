@@ -1,3 +1,3 @@
-GET     /v1/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateless.PeriodsController.get(nino: String)
-POST    /v1/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateless.PeriodsController.post(nino: String)
-PUT     /v1/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateless.PeriodsController.put(nino: String)
+GET     /NINO/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateless.PeriodsController.get(nino: String)
+POST    /NINO/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateless.PeriodsController.post(nino: String)
+PUT     /NINO/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateless.PeriodsController.put(nino: String)
