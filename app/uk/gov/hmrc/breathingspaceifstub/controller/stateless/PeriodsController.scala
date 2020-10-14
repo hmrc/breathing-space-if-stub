@@ -46,26 +46,26 @@ class PeriodsController @Inject()(
   import PeriodsController._
 
   def get(nino: String): Action[AnyContent] = Action.async { implicit request =>
-    composeResponse(nino.toUpperCase, getAcceptedNinoHandler)
+    composeResponse(nino, getAcceptedNinoHandler)
   }
 
   def post(nino: String): Action[AnyContent] = Action.async { implicit request =>
-    composeResponse(nino.toUpperCase, withBodyAcceptedNinoHandler(CREATED, true))
+    composeResponse(nino, withBodyAcceptedNinoHandler(CREATED, true))
   }
 
   def put(nino: String): Action[AnyContent] = Action.async { implicit request =>
-    composeResponse(nino.toUpperCase, withBodyAcceptedNinoHandler(OK, false))
+    composeResponse(nino, withBodyAcceptedNinoHandler(OK, false))
   }
 }
 
 object PeriodsController extends Results with Logging {
   def getAcceptedNinoHandler(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
     nino match {
-      case "BS000001A" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
-      case "BS000002A" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))
-      case "BS000003A" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsFullPopulation.json")))
-      case "BS000004A" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsPartialPopulation.json")))
-      case "BS000005A" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsMixedPopulation.json")))
+      case "AS000001" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
+      case "AS000002" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))
+      case "AS000003" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsFullPopulation.json")))
+      case "AS000004" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsPartialPopulation.json")))
+      case "AS000005" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsMixedPopulation.json")))
       case _ => sendResponse(OK, Some(Json.parse("""{"periods" :[]}""")))
     }
 
@@ -106,13 +106,16 @@ object PeriodsController extends Results with Logging {
 
   def composeResponse(nino: String, acceptedHandler: (String) => Future[Result])(
     implicit request: Request[AnyContent]
-  ): Future[Result] =
-    (nino.take(2), nino.lastOption) match {
-      case ("BS", Some('B')) => // a bad nino
-        sendResponse(extractErrorStatusFromNino(nino))
+  ): Future[Result] = {
+    val normalisedNino = nino.toUpperCase.take(8)
 
-      case _ => acceptedHandler(nino)
+    normalisedNino.take(2) match {
+      case "BS" => // a bad nino
+        sendResponse(extractErrorStatusFromNino(normalisedNino))
+
+      case _ => acceptedHandler(normalisedNino)
     }
+  }
 
   def sendResponse(httpCode: Int, responseBody: Option[JsValue] = None)(
     implicit request: Request[AnyContent]

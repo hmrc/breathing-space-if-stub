@@ -6,11 +6,11 @@ This is a stub implementation of the EIS Integration Framework backend for the B
 
 Get BS Periods
 
-    'http://localhost:9601/individuals/breathing-space-stateless/NINO/BS000005A/periods' --header 'CorrelationId: 75e4cdc2-eecb-11ea-913a-0a9f09f70a70' --header 'OriginatorId: DS2_BS_UNATTENDED' --header 'UserId: 0000000'
+    'http://localhost:9601/individuals/breathing-space-stateless/NINO/AS000005A/periods' --header 'CorrelationId: 75e4cdc2-eecb-11ea-913a-0a9f09f70a70' --header 'OriginatorId: DS2_BS_UNATTENDED' --header 'UserId: 0000000'
 
 Post Bs Periods
 
-    --request POST 'http://localhost:9601/individuals/breathing-space-stateless/NINO/BS000502A/periods' --header 'CorrelationId: 75e4cdc2-eecb-11ea-913a-0a9f09f70a70' --header 'OriginatorId: DS2_BS_UNATTENDED' --header 'UserId: 0000000' --header 'Content-Type: application/json' --data-raw '{"periods":[{"startDate":"2020-05-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}'
+    --request POST 'http://localhost:9601/individuals/breathing-space-stateless/NINO/AS000502A/periods' --header 'CorrelationId: 75e4cdc2-eecb-11ea-913a-0a9f09f70a70' --header 'OriginatorId: DS2_BS_UNATTENDED' --header 'UserId: 0000000' --header 'Content-Type: application/json' --data-raw '{"periods":[{"startDate":"2020-05-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}'
 
 Put Bs Periods
 
@@ -23,17 +23,18 @@ The stateless endpoint always return the same response for the same request made
 Below is a list of special Nino values that, when passed to any of the stateless stub endpoints, will produce a special response from 
 the stub (such as an error response).
 
-Any Nino that begins with the characters "BS" and ends with the character "B" (for 'bad') will result
-in the stub returning an unhappy Http response code. 
+All Nino values below are without a suffix letter but if a suffix letter is sent then it will be treated the same as if it were not present in the Nino
+
+Any Nino that begins with the characters "BS" will result in the stub returning an unhappy Http response code. 
 
 The last 3 digits of the Nino can be used to specify exactly what response code the stub should return. So
 for instance:
 
     NINO           Http Response Code 
     ------------------------------------------------
-    "BS000400B" => 400
-    "BS000404B" => 404
-    "BS000502B" => 502
+    "BS000400" => 400
+    "BS000404" => 404
+    "BS000502" => 502
 
 If the last 3 digits is not within the standard range of Http error codes then a '500' code will be returned. 
 
@@ -42,11 +43,11 @@ In addition to the generic behaviour described above this particular endpoint wi
 
     NINO           Response 
     ------------------------------------------------
-    "BS000001A" => A single Bs Period fully populated
-    "BS000002A" => A single Bs Period partially populated
-    "BS000003A" => Multiple Bs Periods fully populated
-    "BS000004A" => Multiple Bs Periods partially populated
-    "BS000005A" => Multiple Bs Periods with mixed population
+    "AS000001" => A single Bs Period fully populated
+    "AS000002" => A single Bs Period partially populated
+    "AS000003" => Multiple Bs Periods fully populated
+    "AS000004" => Multiple Bs Periods partially populated
+    "AS000005" => Multiple Bs Periods with mixed population
     All other Nino values will return an empty periods response
 
 ## Stateful Endpoints
