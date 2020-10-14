@@ -34,36 +34,36 @@ class PeriodsControllerISpec extends BaseISpec {
   implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
 
   "GET /NINO/:nino/periods" should {
-    "return 200(OK) with a single period (full population) when the Nino 'BS000001A' is sent" in {
-      val response = makeGetRequest(getConnectionUrl("BS000001A"))
+    "return 200(OK) with a single period (full population) when the Nino 'AS000001A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000001A"))
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody("singleBsPeriodFullPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with a single period (partial population) when the Nino 'BS000002A' is sent" in {
-      val response = makeGetRequest(getConnectionUrl("BS000002A"))
+    "return 200(OK) with a single period (partial population) when the Nino 'AS000002A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000002A"))
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody("singleBsPeriodPartialPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with multiple periods (all full population) when the Nino 'BS000003A' is sent" in {
-      val response = makeGetRequest(getConnectionUrl("BS000003A"))
+    "return 200(OK) with multiple periods (all full population) when the Nino 'AS000003A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000003A"))
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody("multipleBsPeriodsFullPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with multiple periods (all partial population) when the Nino 'BS000004A' is sent" in {
-      val response = makeGetRequest(getConnectionUrl("BS000004A"))
+    "return 200(OK) with multiple periods (all partial population) when the Nino 'AS000004A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000004A"))
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody("multipleBsPeriodsPartialPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with multiple periods (mixed population) when the Nino 'BS000005A' is sent" in {
-      val response = makeGetRequest(getConnectionUrl("BS000005A"))
+    "return 200(OK) with multiple periods (mixed population) when the Nino 'AS000005A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000005A"))
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody("multipleBsPeriodsMixedPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
@@ -134,8 +134,24 @@ class PeriodsControllerISpec extends BaseISpec {
       }
     }
 
+    "ensure Nino suffix is ignored" in {
+      withClue("With suffix") {
+        val response = makeGetRequest(getConnectionUrl("AS000001A"))
+        response.status shouldBe Status.OK
+        response.body shouldBe getExpectedResponseBody("singleBsPeriodFullPopulation.json")
+        response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+      }
+
+      withClue("Without suffix") {
+        val response = makeGetRequest(getConnectionUrl("AS000001"))
+        response.status shouldBe Status.OK
+        response.body shouldBe getExpectedResponseBody("singleBsPeriodFullPopulation.json")
+        response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+      }
+    }
+
     "return same CorrelationId as sent regardless of header name's letter case" in {
-      withClue("MA000700A") {
+      withClue("Mixed case") {
         val response = await(wsClient.url(getConnectionUrl("MA000700A"))
           .withHttpHeaders("CorrelationId" -> correlationHeaderValue.value.get)
           .get())
@@ -143,7 +159,7 @@ class PeriodsControllerISpec extends BaseISpec {
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
-      withClue("MA000200B") {
+      withClue("Lower case") {
         val response = await(wsClient.url(getConnectionUrl("MA000700A"))
           .withHttpHeaders("correlationid" -> correlationHeaderValue.value.get)
           .get())
@@ -151,7 +167,7 @@ class PeriodsControllerISpec extends BaseISpec {
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
-      withClue("AB000500D") {
+      withClue("Upper case") {
         val response = await(wsClient.url(getConnectionUrl("MA000700A"))
           .withHttpHeaders("CORRELATIONID" -> correlationHeaderValue.value.get)
           .get())
@@ -164,7 +180,7 @@ class PeriodsControllerISpec extends BaseISpec {
   "POST /NINO/:nino/periods" should {
 
     "return 201(CREATED) with the periods sent when any accepted Nino value is sent" in {
-      val response = makePostRequest(getConnectionUrl("BS000400A"),
+      val response = makePostRequest(getConnectionUrl("AS000400A"),
         """{"periods":[{"startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
       response.status shouldBe Status.CREATED
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
@@ -226,7 +242,7 @@ class PeriodsControllerISpec extends BaseISpec {
   "PUT /NINO/:nino/periods" should {
 
     "return 200(OK) with the periods sent when any accepted Nino value is sent" in {
-      val response = makePutRequest(getConnectionUrl("BS000400A"),
+      val response = makePutRequest(getConnectionUrl("AS000400A"),
         """{"periods":[{"periodID": "4043d4b5-1f2a-4d10-8878-ef1ce9d97b32", "startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"periodID": "6aed4f02-f652-4bef-af14-49c79e968c2e", "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
       response.status shouldBe Status.OK
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
