@@ -118,12 +118,13 @@ object PeriodsController extends Results with Logging {
     implicit request: Request[AnyContent]
   ): Future[Result] = {
     val body = responseBody.getOrElse(Json.obj("response" -> s"MDTP IF Stub returning '${httpCode}' as requested"))
-    val requestHeaderMap = request.headers.headers.toMap
 
     Future.successful(
       Status(httpCode)(body)
         .withHeaders(
-          Header.CorrelationId -> requestHeaderMap.getOrElse(Header.CorrelationId, UUID.randomUUID().toString)
+          Header.CorrelationId -> request.headers
+            .get(Header.CorrelationId)
+            .getOrElse(UUID.randomUUID().toString)
         )
         .as(MimeTypes.JSON)
     )

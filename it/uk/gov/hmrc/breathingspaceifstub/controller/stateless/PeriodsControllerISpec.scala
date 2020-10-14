@@ -133,6 +133,32 @@ class PeriodsControllerISpec extends BaseISpec {
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
+
+    "return same CorrelationId as sent regardless of header name's letter case" in {
+      withClue("MA000700A") {
+        val response = await(wsClient.url(getConnectionUrl("MA000700A"))
+          .withHttpHeaders("CorrelationId" -> correlationHeaderValue.value.get)
+          .get())
+        response.status shouldBe Status.OK
+        response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+      }
+
+      withClue("MA000200B") {
+        val response = await(wsClient.url(getConnectionUrl("MA000700A"))
+          .withHttpHeaders("correlationid" -> correlationHeaderValue.value.get)
+          .get())
+        response.status shouldBe Status.OK
+        response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+      }
+
+      withClue("AB000500D") {
+        val response = await(wsClient.url(getConnectionUrl("MA000700A"))
+          .withHttpHeaders("CORRELATIONID" -> correlationHeaderValue.value.get)
+          .get())
+        response.status shouldBe Status.OK
+        response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+      }
+    }
   }
 
   "POST /NINO/:nino/periods" should {
