@@ -16,13 +16,4 @@
 
 package uk.gov.hmrc.breathingspaceifstub.model
 
-import play.api.mvc.Request
-import uk.gov.hmrc.breathingspaceifstub.Header
-
 final case class CorrelationId(value: Option[String]) extends AnyVal
-
-object CorrelationId {
-
-  implicit def correlationId(implicit request: Request[_]): CorrelationId =
-    CorrelationId(request.headers.get(Header.CorrelationId))
-}

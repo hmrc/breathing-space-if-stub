@@ -1,2 +1,0 @@
-GET     /NINO/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateful.PeriodsController.get(nino: String)
-POST    /NINO/:nino/periods          uk.gov.hmrc.breathingspaceifstub.controller.stateful.PeriodsController.post(nino: String)

@@ -17,12 +17,5 @@
 package uk.gov.hmrc.breathingspaceifstub.config
 
 import com.google.inject.AbstractModule
-import uk.gov.hmrc.breathingspaceifstub.repository.{DebtorRepository, PeriodsRepository}
 
-class AppModule extends AbstractModule {
-
-  override def configure(): Unit = {
-    bind(classOf[DebtorRepository]).asEagerSingleton
-    bind(classOf[PeriodsRepository]).asEagerSingleton
-  }
-}
+class AppModule extends AbstractModule

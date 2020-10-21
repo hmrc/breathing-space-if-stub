@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspaceifstub.controller.stateless
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import scala.io.Source
 
@@ -23,13 +23,9 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.await
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
-import uk.gov.hmrc.breathingspaceifstub.repository.PeriodsRepository
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
 class PeriodsControllerISpec extends BaseISpec {
-
-  val periodsRepo = app.injector.instanceOf[PeriodsRepository]
-  val periodsStore = periodsRepo.store
 
   implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
 

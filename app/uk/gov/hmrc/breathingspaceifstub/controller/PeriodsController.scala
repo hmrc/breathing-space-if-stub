@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspaceifstub.controller.stateless
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -30,18 +30,13 @@ import play.api.libs.json.Reads._
 import play.api.mvc._
 import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.breathingspaceifstub.Header
-import uk.gov.hmrc.breathingspaceifstub.controller.RequestValidation
-import uk.gov.hmrc.breathingspaceifstub.repository.{DebtorRepository, PeriodsRepository}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
 class PeriodsController @Inject()(
-  cc: ControllerComponents,
-  debtorRepo: DebtorRepository,
-  periodsRepo: PeriodsRepository
+  cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
-    extends BackendController(cc)
-    with RequestValidation {
+    extends BackendController(cc) {
 
   import PeriodsController._
 

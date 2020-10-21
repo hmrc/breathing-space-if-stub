@@ -16,14 +16,7 @@
 
 package uk.gov.hmrc
 
-import uk.gov.hmrc.breathingspaceifstub.model.{Period, RequestPeriod}
-
 package object breathingspaceifstub {
-
-  val unit: Unit = ()
-
-  type RequestPeriods = List[RequestPeriod]
-  type Periods = List[Period]
 
   object Header {
     lazy val CorrelationId = "CorrelationId"
