@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspaceifstub.controller.stateless
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import scala.io.Source
 
@@ -23,13 +23,9 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.await
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
-import uk.gov.hmrc.breathingspaceifstub.repository.PeriodsRepository
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
 class PeriodsControllerISpec extends BaseISpec {
-
-  val periodsRepo = app.injector.instanceOf[PeriodsRepository]
-  val periodsStore = periodsRepo.store
 
   implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
 
@@ -178,7 +174,6 @@ class PeriodsControllerISpec extends BaseISpec {
   }
 
   "POST /NINO/:nino/periods" should {
-
     "return 201(CREATED) with the periods sent when any accepted Nino value is sent" in {
       val response = makePostRequest(getConnectionUrl("AS000400A"),
         """{"periods":[{"startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
@@ -189,6 +184,16 @@ class PeriodsControllerISpec extends BaseISpec {
     "return 400(BAD_REQUEST) when the request is sent without json body" in {
       val response = await(wsClient
         .url(getConnectionUrl("BS000400A"))
+        .withHttpHeaders(Header.CorrelationId -> correlationHeaderValue.value.get)
+        .post("")
+      )
+      response.status shouldBe Status.BAD_REQUEST
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 400(BAD_REQUEST) when the request is sent with good Nino but without json body" in {
+      val response = await(wsClient
+        .url(getConnectionUrl("AS000400A"))
         .withHttpHeaders(Header.CorrelationId -> correlationHeaderValue.value.get)
         .post("")
       )
@@ -240,7 +245,6 @@ class PeriodsControllerISpec extends BaseISpec {
   }
 
   "PUT /NINO/:nino/periods" should {
-
     "return 200(OK) with the periods sent when any accepted Nino value is sent" in {
       val response = makePutRequest(getConnectionUrl("AS000400A"),
         """{"periods":[{"periodID": "4043d4b5-1f2a-4d10-8878-ef1ce9d97b32", "startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"periodID": "6aed4f02-f652-4bef-af14-49c79e968c2e", "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
@@ -317,10 +321,10 @@ class PeriodsControllerISpec extends BaseISpec {
       .get())
 
   private def getConnectionUrl(nino: String): String =
-    s"${testServerAddress}${statelessLocalContext}/NINO/${nino}/periods"
+    s"${testServerAddress}/individuals/breathing-space/NINO/${nino}/periods"
 
   private def getExpectedResponseBody(filename: String): String = {
-    val in = getClass.getResourceAsStream(s"/data/$filename")
+    val in = getClass.getResourceAsStream(s"/data/periods/$filename")
     Source.fromInputStream(in).getLines.mkString.replaceAll("\\s", "")
   }
 }

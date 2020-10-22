@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.breathingspaceifstub.controller.stateless
+package uk.gov.hmrc.breathingspaceifstub.controller
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.Source
 import scala.util.Try
 
 import play.api.Logging
@@ -28,20 +27,14 @@ import play.api.http.Status._
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.mvc._
-import play.mvc.Http.MimeTypes
-import uk.gov.hmrc.breathingspaceifstub.Header
-import uk.gov.hmrc.breathingspaceifstub.controller.RequestValidation
-import uk.gov.hmrc.breathingspaceifstub.repository.{DebtorRepository, PeriodsRepository}
+import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
 class PeriodsController @Inject()(
-  cc: ControllerComponents,
-  debtorRepo: DebtorRepository,
-  periodsRepo: PeriodsRepository
+  cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
-    extends BackendController(cc)
-    with RequestValidation {
+    extends BackendController(cc) {
 
   import PeriodsController._
 
@@ -58,7 +51,7 @@ class PeriodsController @Inject()(
   }
 }
 
-object PeriodsController extends Results with Logging {
+object PeriodsController extends ControllerSupport {
   def getAcceptedNinoHandler(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
     nino match {
       case "AS000001" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
@@ -104,43 +97,5 @@ object PeriodsController extends Results with Logging {
     jsValue.transform(attrTransformer)
   }
 
-  def composeResponse(nino: String, acceptedHandler: (String) => Future[Result])(
-    implicit request: Request[AnyContent]
-  ): Future[Result] = {
-    val normalisedNino = nino.toUpperCase.take(8)
-
-    normalisedNino.take(2) match {
-      case "BS" => // a bad nino
-        sendResponse(extractErrorStatusFromNino(normalisedNino))
-
-      case _ => acceptedHandler(normalisedNino)
-    }
-  }
-
-  def sendResponse(httpCode: Int, responseBody: Option[JsValue] = None)(
-    implicit request: Request[AnyContent]
-  ): Future[Result] = {
-    val body = responseBody.getOrElse(Json.obj("response" -> s"MDTP IF Stub returning '${httpCode}' as requested"))
-
-    Future.successful(
-      Status(httpCode)(body)
-        .withHeaders(
-          Header.CorrelationId -> request.headers
-            .get(Header.CorrelationId)
-            .getOrElse(UUID.randomUUID().toString)
-        )
-        .as(MimeTypes.JSON)
-    )
-  }
-
-  def extractErrorStatusFromNino(nino: String): Int = {
-    val requestedResponseCode = Try(nino.substring(5, 8).toInt).getOrElse(INTERNAL_SERVER_ERROR)
-    if (requestedResponseCode < 200 || requestedResponseCode > 599) INTERNAL_SERVER_ERROR else requestedResponseCode
-  }
-
-  def jsonDataFromFile(filename: String): JsValue = {
-    val in = getClass.getResourceAsStream(s"/data/$filename")
-    val raw = Source.fromInputStream(in).getLines.mkString
-    Json.parse(raw)
-  }
+  def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"periods/$filename")
 }
