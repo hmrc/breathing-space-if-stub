@@ -43,9 +43,6 @@ trait BaseISpec
 
   implicit lazy val materializer: Materializer = app.materializer
 
-  lazy val statefulLocalContext: String = "/individuals/breathing-space"
-  lazy val statelessLocalContext: String = "/individuals/breathing-space-stateless"
-
   lazy val wsClient: WSClient = inject[WSClient]
 
   lazy val testServerAddress = s"http://localhost:$port"
