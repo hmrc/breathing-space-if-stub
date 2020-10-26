@@ -23,8 +23,8 @@ import scala.io.Source
 import scala.util.Try
 
 import play.api.Logging
-import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR}
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
+import play.api.http.Status.INTERNAL_SERVER_ERROR
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContent, Request, Result, Results}
 import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.breathingspaceifstub.Header

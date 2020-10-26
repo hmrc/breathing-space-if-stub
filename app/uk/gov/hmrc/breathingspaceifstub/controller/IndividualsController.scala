@@ -23,28 +23,27 @@ import scala.concurrent.{ExecutionContext, Future}
 import play.api.http.Status.{NOT_FOUND, OK, UNPROCESSABLE_ENTITY}
 import play.api.libs.json.JsValue
 import play.api.mvc._
-import uk.gov.hmrc.breathingspaceifstub.controller.DebtorController.sendResponse
 import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
-class DebtorController @Inject()(
+class IndividualsController @Inject()(
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
     extends BackendController(cc) {
 
-  import DebtorController._
+  import IndividualsController._
 
   def get(nino: String, fields: String): Action[AnyContent] = Action.async { implicit request =>
     composeResponse(nino, getAcceptedNinoHandler(fields))
   }
 }
 
-object DebtorController extends ControllerSupport {
+object IndividualsController extends ControllerSupport {
   def getAcceptedNinoHandler(fields: String)(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
     (nino, fields.replaceAll("\\s+", "")) match {
       case ("AS000001", "details(nino,dateOfBirth,cnrIndicator)") =>
-        sendResponse(OK, Some(jsonDataFromFile("debtorMinimumPopulation.json")))
+        sendResponse(OK, Some(jsonDataFromFile("individualMinimumPopulation.json")))
 
       case ("AS000001", _) =>
         sendResponse(UNPROCESSABLE_ENTITY)
@@ -52,5 +51,5 @@ object DebtorController extends ControllerSupport {
       case _ => sendResponse(NOT_FOUND)
     }
 
-  def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"debtor/$filename")
+  def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"individuals/$filename")
 }

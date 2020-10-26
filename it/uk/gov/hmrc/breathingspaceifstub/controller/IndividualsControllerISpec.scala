@@ -24,25 +24,25 @@ import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
-class DebtorControllerISpec extends BaseISpec {
+class IndividualsControllerISpec extends BaseISpec {
 
   implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
 
   "GET /NINO/:nino" should {
-    "return 200(OK) with a debtor details (minimum population) when the Nino 'AS000001A' is sent with correct filter" in {
+    "return 200(OK) with a individual details (minimum population) when the Nino 'AS000001A' is sent with correct filter" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("debtorMinimumPopulation.json")
+      response.body shouldBe getExpectedResponseBody("individualMinimumPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 422(UNPROCESSABLE_ENTITY) with a debtor details (minimum population) when the Nino 'AS000001A' is sent with missing filter" in {
+    "return 422(UNPROCESSABLE_ENTITY) with a individual details (minimum population) when the Nino 'AS000001A' is sent with missing filter" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A"))
       response.status shouldBe Status.UNPROCESSABLE_ENTITY
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 422(UNPROCESSABLE_ENTITY) with a debtor details (minimum population) when the Nino 'AS000001A' is sent with incorrect filter" in {
+    "return 422(UNPROCESSABLE_ENTITY) with a individual details (minimum population) when the Nino 'AS000001A' is sent with incorrect filter" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A", Some("!details(nino,dateOfBirth,cnrIndicator)")))
       response.status shouldBe Status.UNPROCESSABLE_ENTITY
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
@@ -94,14 +94,14 @@ class DebtorControllerISpec extends BaseISpec {
       withClue("With suffix") {
         val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody("debtorMinimumPopulation.json")
+        response.body shouldBe getExpectedResponseBody("individualMinimumPopulation.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
       withClue("Without suffix") {
         val response = makeGetRequest(getConnectionUrl("AS000001", Some("details(nino,dateOfBirth,cnrIndicator)")))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody("debtorMinimumPopulation.json")
+        response.body shouldBe getExpectedResponseBody("individualMinimumPopulation.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
@@ -145,7 +145,7 @@ class DebtorControllerISpec extends BaseISpec {
   }
 
   private def getExpectedResponseBody(filename: String): String = {
-    val in = getClass.getResourceAsStream(s"/data/debtor/$filename")
+    val in = getClass.getResourceAsStream(s"/data/individuals/$filename")
     Source.fromInputStream(in)
       .getLines
       .map( // remove pre padding whitespace & post colon whitespace from each line (but not whitespaces from values)
