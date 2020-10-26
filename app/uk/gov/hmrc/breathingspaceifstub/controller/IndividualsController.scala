@@ -40,16 +40,41 @@ class IndividualsController @Inject()(
 }
 
 object IndividualsController extends ControllerSupport {
-  def getAcceptedNinoHandler(fields: String)(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
-    (nino, fields.replaceAll("\\s+", "")) match {
-      case ("AS000001", "details(nino,dateOfBirth,cnrIndicator)") =>
-        sendResponse(OK, Some(jsonDataFromFile("individualMinimumPopulation.json")))
+  private val MinimumPopulation = "MinimumPopulation"
 
-      case ("AS000001", _) =>
-        sendResponse(UNPROCESSABLE_ENTITY)
+  def getAcceptedNinoHandler(fields: String)(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
+    (nino) match {
+      case "AS000001" =>
+        getAcceptedFilterHandler(fields, "FullPopulation")
+
+      case "AS000002" =>
+        getAcceptedFilterHandler(fields, MinimumPopulation)
+
+      case "AS000003" =>
+        getAcceptedFilterHandler(fields, "SingularPopulation")
 
       case _ => sendResponse(NOT_FOUND)
     }
 
-  def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"individuals/$filename")
+  def getAcceptedFilterHandler(fields: String, population: String)(
+    implicit request: Request[AnyContent]
+  ): Future[Result] =
+    fields.replaceAll("\\s+", "") match {
+      case "details(nino,dateOfBirth,cnrIndicator)" =>
+        sendResponse(OK, Some(jsonDataFromFile(getSampleDataFileNamePart(population, 0))))
+
+      case "details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))" =>
+        sendResponse(OK, Some(jsonDataFromFile(getSampleDataFileNamePart(population, 1))))
+
+      case _ =>
+        sendResponse(UNPROCESSABLE_ENTITY)
+    }
+
+  def getSampleDataFileNamePart(fileName: String, filterIndex: Int): String =
+    fileName match {
+      case MinimumPopulation => s"${fileName}"
+      case otherPopulation => s"${filterIndex}${fileName}"
+    }
+
+  def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"individuals/details${filename}.json")
 }

@@ -29,10 +29,45 @@ class IndividualsControllerISpec extends BaseISpec {
   implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
 
   "GET /NINO/:nino" should {
-    "return 200(OK) with a individual details (minimum population) when the Nino 'AS000001A' is sent with correct filter" in {
+    "return 200(OK) with a individual details filter #0 (full population) when the Nino 'AS000001A' is sent with correct filter" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("individualMinimumPopulation.json")
+      response.body shouldBe getExpectedResponseBody("details0FullPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 200(OK) with a individual details filter #0 (minimum population) when the Nino 'AS000002A' is sent with correct filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000002A", Some("details(nino,dateOfBirth,cnrIndicator)")))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("detailsMinimumPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 200(OK) with a individual details filter #0 (singular population) when the Nino 'AS000003A' is sent with correct filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000003A", Some("details(nino,dateOfBirth,cnrIndicator)")))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("details0SingularPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 200(OK) with a individual details filter #1 (full population) when the Nino 'AS000001A' is sent with correct filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))")))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("details1FullPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 200(OK) with a individual details filter #1 (minimum population) when the Nino 'AS000002A' is sent with correct filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000002A", Some("details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))")))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("detailsMinimumPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 200(OK) with a individual details filter #1 (singular population) when the Nino 'AS000003A' is sent with correct filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000003A", Some("details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))")))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("details1SingularPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
@@ -94,14 +129,14 @@ class IndividualsControllerISpec extends BaseISpec {
       withClue("With suffix") {
         val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody("individualMinimumPopulation.json")
+        response.body shouldBe getExpectedResponseBody("details0FullPopulation.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
       withClue("Without suffix") {
         val response = makeGetRequest(getConnectionUrl("AS000001", Some("details(nino,dateOfBirth,cnrIndicator)")))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody("individualMinimumPopulation.json")
+        response.body shouldBe getExpectedResponseBody("details0FullPopulation.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
