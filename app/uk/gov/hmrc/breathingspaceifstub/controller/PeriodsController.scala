@@ -20,9 +20,7 @@ import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
-import play.api.Logging
 import play.api.http.Status._
 import play.api.libs.json._
 import play.api.libs.json.Reads._

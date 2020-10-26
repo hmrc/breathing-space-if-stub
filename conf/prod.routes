@@ -1,6 +1,6 @@
 # Add all the application routes to the stateful.routes file
 ->      /                             health.Routes
 ->      /individuals/breathing-space  period.Routes
-->      /individuals/details          debtor.Routes
+->      /individuals/details          individuals.Routes
 
 GET     /admin/metrics                com.kenshoo.play.metrics.MetricsController.metrics

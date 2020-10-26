@@ -1,0 +1,13 @@
+{
+    "nino": "AS000001",
+    "dateOfBirth": "1955-04-06",
+    "nameList": {
+        "name": [
+            {
+                "firstForename": "Abbey",
+                "secondForename": "Betty",
+                "surname": "MaidenName"
+            }
+        ]
+    }
+}
