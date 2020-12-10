@@ -1,0 +1,28 @@
+{
+  "details": {
+    "nino": "${nino}",
+    "dateOfBirth": "1980-07-31"
+  },
+  "nameList": {
+    "name": [
+      {
+        "firstForename": "John",
+        "secondForename": "Junior",
+        "surname": "Smith"
+      }
+    ]
+  },
+  "addressList": {
+    "address": [
+      {
+        "addressLine1": "88 TESTING ROAD",
+        "addressLine2": "TESTTOWN",
+        "addressLine3": "TESTREGION",
+        "addressLine4": "TESTAREA",
+        "addressLine5": "TESTSHIRE",
+        "addressPostcode": "XX77 6YY",
+        "countryCode": 1
+      }
+    ]
+  }
+}

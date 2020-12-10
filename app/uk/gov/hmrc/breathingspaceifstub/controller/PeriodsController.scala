@@ -50,7 +50,7 @@ class PeriodsController @Inject()(
 }
 
 object PeriodsController extends ControllerSupport {
-  def getAcceptedNinoHandler(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
+  def getAcceptedNinoHandler(nino: String)(implicit request: Request[_]): Future[Result] =
     nino match {
       case "AS000001" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
       case "AS000002" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))

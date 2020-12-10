@@ -18,67 +18,37 @@ package uk.gov.hmrc.breathingspaceifstub.controller
 
 import scala.io.Source
 
+import cats.syntax.option._
 import play.api.http.Status
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.await
-import uk.gov.hmrc.breathingspaceifstub.Header
+import uk.gov.hmrc.breathingspaceifstub.{Detail0, Header}
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
-class IndividualsControllerISpec extends BaseISpec {
+class IndividualDetailsControllerISpec extends BaseISpec {
 
-  implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
+  implicit val correlationHeaderValue: CorrelationId = CorrelationId(correlationId.some)
 
   "GET /NINO/:nino" should {
-    "return 200(OK) with a individual details filter #0 (full population) when the Nino 'AS000001A' is sent with correct filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
+    "return 200(OK) with the expected individual details when the Url provides the expected filter" in {
+      val nino = "AS000001"
+      val response = makeGetRequest(getConnectionUrl(nino, Detail0.some))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("details0FullPopulation.json")
+      response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with a individual details filter #0 (minimum population) when the Nino 'AS000002A' is sent with correct filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000002A", Some("details(nino,dateOfBirth,cnrIndicator)")))
+    "return 200(OK) with a individual details (full population) when the Url does not provide a filter" in {
+      val nino = "AS000001"
+      val response = makeGetRequest(getConnectionUrl(nino, none))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("detailsMinimumPopulation.json")
+      response.body shouldBe getExpectedResponseBody(nino, "DetailsPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with a individual details filter #0 (singular population) when the Nino 'AS000003A' is sent with correct filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000003A", Some("details(nino,dateOfBirth,cnrIndicator)")))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("details0SingularPopulation.json")
-      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
-    }
-
-    "return 200(OK) with a individual details filter #1 (full population) when the Nino 'AS000001A' is sent with correct filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))")))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("details1FullPopulation.json")
-      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
-    }
-
-    "return 200(OK) with a individual details filter #1 (minimum population) when the Nino 'AS000002A' is sent with correct filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000002A", Some("details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))")))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("detailsMinimumPopulation.json")
-      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
-    }
-
-    "return 200(OK) with a individual details filter #1 (singular population) when the Nino 'AS000003A' is sent with correct filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000003A", Some("details(nino,dateOfBirth),namelist(name(firstForename,secondForename,surname))")))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("details1SingularPopulation.json")
-      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
-    }
-
-    "return 422(UNPROCESSABLE_ENTITY) with a individual details (minimum population) when the Nino 'AS000001A' is sent with missing filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000001A"))
-      response.status shouldBe Status.UNPROCESSABLE_ENTITY
-      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
-    }
-
-    "return 422(UNPROCESSABLE_ENTITY) with a individual details (minimum population) when the Nino 'AS000001A' is sent with incorrect filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("!details(nino,dateOfBirth,cnrIndicator)")))
+    "return 422(UNPROCESSABLE_ENTITY) when the Url provides an unexpected filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000001A", "details(nino,dateOfBirth,cnrIndicator)".some))
       response.status shouldBe Status.UNPROCESSABLE_ENTITY
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
@@ -89,8 +59,8 @@ class IndividualsControllerISpec extends BaseISpec {
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 404(NOT_FOUND) when the Nino 'CS000404B' is sent" in {
-      val response = makeGetRequest(getConnectionUrl("CS000404B"))
+    "return 404(NOT_FOUND) when the Nino 'BS000404B' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("BS000404B"))
       response.status shouldBe Status.NOT_FOUND
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
@@ -127,23 +97,25 @@ class IndividualsControllerISpec extends BaseISpec {
 
     "ensure Nino suffix is ignored" in {
       withClue("With suffix") {
-        val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
+        val nino = "AS000001"
+        val response = makeGetRequest(getConnectionUrl(s"${nino}A", Detail0.some))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody("details0FullPopulation.json")
+        response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
       withClue("Without suffix") {
-        val response = makeGetRequest(getConnectionUrl("AS000001", Some("details(nino,dateOfBirth,cnrIndicator)")))
+        val nino = "AS000001"
+        val response = makeGetRequest(getConnectionUrl(nino, Detail0.some))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody("details0FullPopulation.json")
+        response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
 
     "return same CorrelationId as sent regardless of header name's letter case" in {
       withClue("Mixed case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some("details(nino,dateOfBirth,cnrIndicator)")))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Detail0.some))
           .withHttpHeaders("CorrelationId" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -151,7 +123,7 @@ class IndividualsControllerISpec extends BaseISpec {
       }
 
       withClue("Lower case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some("details(nino,dateOfBirth,cnrIndicator)")))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Detail0.some))
           .withHttpHeaders("correlationid" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -159,7 +131,7 @@ class IndividualsControllerISpec extends BaseISpec {
       }
 
       withClue("Upper case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some("details(nino,dateOfBirth,cnrIndicator)")))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Detail0.some))
           .withHttpHeaders("CORRELATIONID" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -168,23 +140,23 @@ class IndividualsControllerISpec extends BaseISpec {
     }
   }
 
-  private def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId) = {
-    await(wsClient.url(connectionUrl)
-      .withHttpHeaders(Header.CorrelationId -> correlationId.value.get)
-      .get())
-  }
+  private def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId): WSResponse =
+    await(wsClient.url(connectionUrl).withHttpHeaders(Header.CorrelationId -> correlationId.value.get).get())
 
   private def getConnectionUrl(nino: String, fields: Option[String] = None): String = {
     val querySting = fields.map(value => s"?fields=${value}").getOrElse("")
     s"${testServerAddress}/individuals/details/NINO/${nino}${querySting}"
   }
 
-  private def getExpectedResponseBody(filename: String): String = {
+  private def getExpectedResponseBody(nino: String, filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/individuals/$filename")
     Source.fromInputStream(in)
       .getLines
       .map( // remove pre padding whitespace & post colon whitespace from each line (but not whitespaces from values)
-        _.replaceAll("^[ \\t]+", "").replaceAll(":[ \\t]+", ":"))
+        _.replaceAll("^[ \\t]+", "")
+          .replaceAll(":[ \\t]+", ":")
+          .replaceFirst("\\$\\{nino}", nino)
+      )
       .mkString
   }
 }

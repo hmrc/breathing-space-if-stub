@@ -4,7 +4,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "breathing-space-if-stub"
 
-val silencerVersion = "1.7.0"
+val silencerVersion = "1.7.1"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
@@ -12,7 +12,7 @@ lazy val microservice = Project(appName, file("."))
     majorVersion             := 0,
     scalaVersion             := "2.12.12",
     PlayKeys.playDefaultPort := 9601,
-    libraryDependencies      ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies      ++= Dependencies.compile ++ Dependencies.test,
     // ***************
     // Use the silencer plugin to suppress warnings
     scalacOptions += "-P:silencer:pathFilters=routes",

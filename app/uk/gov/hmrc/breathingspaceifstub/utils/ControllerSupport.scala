@@ -24,14 +24,14 @@ import scala.util.Try
 
 import play.api.Logging
 import play.api.http.Status.INTERNAL_SERVER_ERROR
-import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, Request, Result, Results}
+import play.api.libs.json._
+import play.api.mvc.{Request, Result, Results}
 import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.breathingspaceifstub.Header
 
 trait ControllerSupport extends Results with Logging {
   def sendResponse(httpCode: Int, responseBody: Option[JsValue] = None)(
-    implicit request: Request[AnyContent]
+    implicit request: Request[_]
   ): Future[Result] = {
     val body = responseBody.getOrElse(Json.obj("response" -> s"MDTP IF Stub returning '${httpCode}' as requested"))
 
@@ -52,16 +52,16 @@ trait ControllerSupport extends Results with Logging {
   }
 
   def composeResponse(nino: String, acceptedHandler: (String) => Future[Result])(
-    implicit request: Request[AnyContent]
+    implicit request: Request[_]
   ): Future[Result] = {
     val normalisedNino = nino.toUpperCase.take(8)
+    if (normalisedNino.take(2) == "BS") sendResponse(extractErrorStatusFromNino(normalisedNino)) // a bad nino
+    else acceptedHandler(normalisedNino)
+  }
 
-    normalisedNino.take(2) match {
-      case "BS" => // a bad nino
-        sendResponse(extractErrorStatusFromNino(normalisedNino))
-
-      case _ => acceptedHandler(normalisedNino)
-    }
+  def getDataFromFile(filename: String): String = {
+    val in = getClass.getResourceAsStream(s"/data/$filename")
+    Source.fromInputStream(in).getLines.mkString
   }
 
   def getJsonDataFromFile(filename: String): JsValue = {

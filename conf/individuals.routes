@@ -1,1 +1,0 @@
-GET  /NINO/:nino    uk.gov.hmrc.breathingspaceifstub.controller.IndividualsController.get(nino: String, fields: String ?= "")
