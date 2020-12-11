@@ -144,8 +144,8 @@ class IndividualDetailsControllerISpec extends BaseISpec {
     await(wsClient.url(connectionUrl).withHttpHeaders(Header.CorrelationId -> correlationId.value.get).get())
 
   private def getConnectionUrl(nino: String, fields: Option[String] = None): String = {
-    val querySting = fields.map(value => s"?fields=${value}").getOrElse("")
-    s"${testServerAddress}/individuals/details/NINO/${nino}${querySting}"
+    val queryString = fields.map(value => s"?fields=${value}").getOrElse("")
+    s"${testServerAddress}/individuals/details/NINO/${nino}${queryString}"
   }
 
   private def getExpectedResponseBody(nino: String, filename: String): String = {
