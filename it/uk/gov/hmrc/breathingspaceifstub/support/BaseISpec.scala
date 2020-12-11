@@ -37,8 +37,8 @@ trait BaseISpec
     with DefaultAwaitTimeout
     with Futures
     with GuiceOneServerPerSuite
-    with Matchers
     with Injecting
+    with Matchers
     with OptionValues {
 
   implicit lazy val materializer: Materializer = app.materializer
@@ -52,7 +52,7 @@ trait BaseISpec
   lazy val validHeaders = List(
     CONTENT_TYPE -> MimeTypes.JSON,
     Header.CorrelationId -> correlationId,
-    Header.OriginatorId -> Attended.DS2_BS_ATTENDED.toString,
+    Header.OriginatorId -> Attended.DA2_BS_ATTENDED.toString,
     Header.UserId -> "1234567"
   )
 
