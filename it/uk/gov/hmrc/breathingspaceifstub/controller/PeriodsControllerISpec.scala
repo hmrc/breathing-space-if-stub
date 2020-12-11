@@ -175,8 +175,10 @@ class PeriodsControllerISpec extends BaseISpec {
 
   "POST /NINO/:nino/periods" should {
     "return 201(CREATED) with the periods sent when any accepted Nino value is sent" in {
-      val response = makePostRequest(getConnectionUrl("AS000400A"),
-        """{"periods":[{"startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
+      val period1 = """{"startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
+      val period2 = """{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
+      val bodyContents = s"""{"periods":[$period1,$period2]}"""
+      val response = makePostRequest(getConnectionUrl("AS000400A"), bodyContents)
       response.status shouldBe Status.CREATED
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
@@ -246,8 +248,12 @@ class PeriodsControllerISpec extends BaseISpec {
 
   "PUT /NINO/:nino/periods" should {
     "return 200(OK) with the periods sent when any accepted Nino value is sent" in {
-      val response = makePutRequest(getConnectionUrl("AS000400A"),
-        """{"periods":[{"periodID": "4043d4b5-1f2a-4d10-8878-ef1ce9d97b32", "startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"},{"periodID": "6aed4f02-f652-4bef-af14-49c79e968c2e", "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}]}""")
+      val periodId1 = """"periodID": "4043d4b5-1f2a-4d10-8878-ef1ce9d97b32""""
+      val periodId2 = """"periodID": "6aed4f02-f652-4bef-af14-49c79e968c2e""""
+      val period1 = s"""{$periodId1, "startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
+      val period2 = s"""{$periodId2, "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
+      val bodyContents = s"""{"periods":[$period1,$period2]}"""
+      val response = makePutRequest(getConnectionUrl("AS000400A"), bodyContents)
       response.status shouldBe Status.OK
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
@@ -263,7 +269,10 @@ class PeriodsControllerISpec extends BaseISpec {
     }
 
     "return 400(BAD_REQUEST) when the request is sent with invalid json body" in {
-      val response = makePutRequest(getConnectionUrl("BS000400A"), """{"notWhatWeAreExpecting":"certainlyNot"}""")
+      val response = makePutRequest(
+        getConnectionUrl("BS000400A"),
+        """{"notWhatWeAreExpecting":"certainlyNot"}"""
+      )
       response.status shouldBe Status.BAD_REQUEST
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }

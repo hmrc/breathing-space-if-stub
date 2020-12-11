@@ -21,7 +21,6 @@ import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import play.api.http.Status._
 import play.api.libs.json._
 import play.api.libs.json.Reads._
 import play.api.mvc._
@@ -32,9 +31,8 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 class PeriodsController @Inject()(
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
-    extends BackendController(cc) {
-
-  import PeriodsController._
+    extends BackendController(cc)
+    with ControllerSupport {
 
   def get(nino: String): Action[AnyContent] = Action.async { implicit request =>
     composeResponse(nino, getAcceptedNinoHandler)
@@ -47,17 +45,15 @@ class PeriodsController @Inject()(
   def put(nino: String): Action[AnyContent] = Action.async { implicit request =>
     composeResponse(nino, withBodyAcceptedNinoHandler(OK, false))
   }
-}
 
-object PeriodsController extends ControllerSupport {
   def getAcceptedNinoHandler(nino: String)(implicit request: Request[_]): Future[Result] =
     nino match {
-      case "AS000001" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodFullPopulation.json")))
-      case "AS000002" => sendResponse(OK, Some(jsonDataFromFile("singleBsPeriodPartialPopulation.json")))
-      case "AS000003" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsFullPopulation.json")))
-      case "AS000004" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsPartialPopulation.json")))
-      case "AS000005" => sendResponse(OK, Some(jsonDataFromFile("multipleBsPeriodsMixedPopulation.json")))
-      case _ => sendResponse(OK, Some(Json.parse("""{"periods" :[]}""")))
+      case "AS000001" => sendResponse(OK, jsonDataFromFile("singleBsPeriodFullPopulation.json"))
+      case "AS000002" => sendResponse(OK, jsonDataFromFile("singleBsPeriodPartialPopulation.json"))
+      case "AS000003" => sendResponse(OK, jsonDataFromFile("multipleBsPeriodsFullPopulation.json"))
+      case "AS000004" => sendResponse(OK, jsonDataFromFile("multipleBsPeriodsPartialPopulation.json"))
+      case "AS000005" => sendResponse(OK, jsonDataFromFile("multipleBsPeriodsMixedPopulation.json"))
+      case _ => sendResponse(OK, Json.parse("""{"periods":[]}"""))
     }
 
   def withBodyAcceptedNinoHandler(
@@ -66,13 +62,18 @@ object PeriodsController extends ControllerSupport {
   )(nino: String)(implicit request: Request[AnyContent]): Future[Result] =
     request.body.asJson match {
       case None =>
-        sendResponse(BAD_REQUEST)
+        sendResponse(BAD_REQUEST, failures("MISSING_BODY", "The request must have a body"))
 
       case Some(jsValue) =>
         logger.info(s"BS-STUB >> REQUEST: = POST ${request.uri} BODY: = ${jsValue.toString()}")
         transformRequestJsonToResponseJson(jsValue, addPeriodIdField) match {
-          case JsError(_) => sendResponse(BAD_REQUEST)
-          case JsSuccess(jsObject, _) => sendResponse(httpSuccessCode, Some(jsObject))
+          case JsError(_) =>
+            sendResponse(
+              BAD_REQUEST,
+              failures("INVALID_JSON", "Payload not in the expected Json format")
+            )
+
+          case JsSuccess(jsObject, _) => sendResponse(httpSuccessCode, jsObject)
         }
     }
 

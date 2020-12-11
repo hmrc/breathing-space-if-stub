@@ -19,39 +19,51 @@ package uk.gov.hmrc.breathingspaceifstub.controller
 import scala.io.Source
 
 import play.api.http.Status
-import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.await
-import uk.gov.hmrc.breathingspaceifstub.{Detail0, Header}
+import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
-class IndividualDetailsControllerISpec extends BaseISpec {
+class DebtsControllerISpec extends BaseISpec {
 
   implicit val correlationHeaderValue: CorrelationId = CorrelationId(Some(correlationId))
 
-  "GET /NINO/:nino" should {
-    "return 200(OK) with the expected individual details when the Url provides the expected filter" in {
-      val nino = "AS000001"
-      val response = makeGetRequest(getConnectionUrl(nino, Some(Detail0)))
+  "GET /NINO/:nino/debts" should {
+    "return 200(OK) with a single debt (full population) when the Nino 'AS000001A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000001A"))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
+      response.body shouldBe getExpectedResponseBody("singleBsDebtFullPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 200(OK) with a individual details (full population) when the Url does not provide a filter" in {
-      val nino = "AS000001"
-      val response = makeGetRequest(getConnectionUrl(nino, None))
+    "return 200(OK) with a single debt (partial population) when the Nino 'AS000002A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000002A"))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody(nino, "DetailsPopulation.json")
+      response.body shouldBe getExpectedResponseBody("singleBsDebtPartialPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 422(UNPROCESSABLE_ENTITY) when the Url provides an unexpected filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
-      response.status shouldBe Status.UNPROCESSABLE_ENTITY
+    "return 200(OK) with multiple debts (all full population) when the Nino 'AS000003A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000003A"))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("multipleBsDebtsFullPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
-    
+
+    "return 200(OK) with multiple debts (all partial population) when the Nino 'AS000004A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000004A"))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("multipleBsDebtsPartialPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 200(OK) with multiple debts (mixed population) when the Nino 'AS000005A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000005A"))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("multipleBsDebtsMixedPopulation.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
     "return 400(BAD_REQUEST) when the Nino 'BS000400B' is sent" in {
       val response = makeGetRequest(getConnectionUrl("BS000400B"))
       response.status shouldBe Status.BAD_REQUEST
@@ -94,27 +106,34 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
+    "return 404(NO_DATA_FOUND) when the Nino specified is unknown " in {
+      withClue("MA000700A") {
+        val response = makeGetRequest(getConnectionUrl("MA000700A"))
+        response.status shouldBe Status.NOT_FOUND
+        assert(response.body.startsWith("""{"failures":[{"code":"NO_DATA_FOUND","reason":"""))
+        response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+      }
+    }
+
     "ensure Nino suffix is ignored" in {
       withClue("With suffix") {
-        val nino = "AS000001"
-        val response = makeGetRequest(getConnectionUrl(s"${nino}A", Some(Detail0)))
+        val response = makeGetRequest(getConnectionUrl("AS000001A"))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
+        response.body shouldBe getExpectedResponseBody("singleBsDebtFullPopulation.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
       withClue("Without suffix") {
-        val nino = "AS000001"
-        val response = makeGetRequest(getConnectionUrl(nino, Some(Detail0)))
+        val response = makeGetRequest(getConnectionUrl("AS000001"))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
+        response.body shouldBe getExpectedResponseBody("singleBsDebtFullPopulation.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
 
     "return same CorrelationId as sent regardless of header name's letter case" in {
       withClue("Mixed case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(Detail0)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001A"))
           .withHttpHeaders("CorrelationId" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -122,7 +141,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       }
 
       withClue("Lower case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(Detail0)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001A"))
           .withHttpHeaders("correlationid" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -130,7 +149,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       }
 
       withClue("Upper case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(Detail0)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001A"))
           .withHttpHeaders("CORRELATIONID" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -139,22 +158,21 @@ class IndividualDetailsControllerISpec extends BaseISpec {
     }
   }
 
-  private def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId): WSResponse =
-    await(wsClient.url(connectionUrl).withHttpHeaders(Header.CorrelationId -> correlationId.value.get).get())
+  private def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId) =
+    await(wsClient.url(connectionUrl)
+      .withHttpHeaders(Header.CorrelationId -> correlationId.value.get)
+      .get())
 
-  private def getConnectionUrl(nino: String, fields: Option[String] = None): String = {
-    val queryString = fields.map(value => s"?fields=${value}").getOrElse("")
-    s"${testServerAddress}/individuals/details/NINO/${nino}${queryString}"
-  }
+  private def getConnectionUrl(nino: String): String =
+    s"${testServerAddress}/individuals/breathing-space/NINO/${nino}/debts"
 
-  private def getExpectedResponseBody(nino: String, filename: String): String = {
-    val in = getClass.getResourceAsStream(s"/data/individuals/$filename")
+  private def getExpectedResponseBody(filename: String): String = {
+    val in = getClass.getResourceAsStream(s"/data/debts/$filename")
     Source.fromInputStream(in)
       .getLines
       .map( // remove pre padding whitespace & post colon whitespace from each line (but not whitespaces from values)
         _.replaceAll("^[ \\t]+", "")
-          .replaceAll(":[ \\t]+", ":")
-          .replaceFirst("\\$\\{nino}", nino)
+         .replaceAll(":[ \\t]+", ":")
       )
       .mkString
   }
