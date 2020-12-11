@@ -20,35 +20,31 @@ import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import play.api.libs.json.Json
+import play.api.libs.json._
 import play.api.mvc._
-import uk.gov.hmrc.breathingspaceifstub.Detail0
 import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
-class IndividualDetailsController @Inject()(
+class DebtsController @Inject()(
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
     extends BackendController(cc)
     with ControllerSupport {
 
-  def get(nino: String, fields: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    composeResponse(nino, getAcceptedNinoHandler(fields))
+  def get(nino: String): Action[AnyContent] = Action.async { implicit request =>
+    composeResponse(nino, getAcceptedNinoHandler)
   }
 
-  private def getAcceptedNinoHandler(
-    fields: Option[String]
-  )(nino: String)(implicit request: Request[_]): Future[Result] =
-    fields.fold {
-      sendResponse(nino, getDataFromFile("individuals/DetailsPopulation.json"))
-    } {
-      _.replaceAll("\\s+", "") match {
-        case Detail0 => sendResponse(nino, getDataFromFile("individuals/Detail0Population.json"))
-        case _ => sendResponse(UNPROCESSABLE_ENTITY, failures("UNKNOWN_DATA_ITEM"))
-      }
+  def getAcceptedNinoHandler(nino: String)(implicit request: Request[_]): Future[Result] =
+    nino match {
+      case "AS000001" => sendResponse(OK, jsonDataFromFile("singleBsDebtFullPopulation.json"))
+      case "AS000002" => sendResponse(OK, jsonDataFromFile("singleBsDebtPartialPopulation.json"))
+      case "AS000003" => sendResponse(OK, jsonDataFromFile("multipleBsDebtsFullPopulation.json"))
+      case "AS000004" => sendResponse(OK, jsonDataFromFile("multipleBsDebtsPartialPopulation.json"))
+      case "AS000005" => sendResponse(OK, jsonDataFromFile("multipleBsDebtsMixedPopulation.json"))
+      case _ => sendResponse(NOT_FOUND, failures("NO_DATA_FOUND", "No records found for the given Nino"))
     }
 
-  private def sendResponse(nino: String, details: String)(implicit request: Request[_]): Future[Result] =
-    sendResponse(OK, Json.parse(details.replaceFirst("\\$\\{nino}", nino)))
+  def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"debts/$filename")
 }

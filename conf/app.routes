@@ -2,6 +2,10 @@
 # ======================================
 GET   /individuals/details/NINO/:nino  uk.gov.hmrc.breathingspaceifstub.controller.IndividualDetailsController.get(nino, fields: Option[String])
 
+# Production routes (BS Debts)
+# ============================
+GET   /individuals/breathing-space/NINO/:nino/debts  uk.gov.hmrc.breathingspaceifstub.controller.DebtsController.get(nino)
+
 # Production routes (BS Periods)
 # ==============================
 GET   /individuals/breathing-space/NINO/:nino/periods  uk.gov.hmrc.breathingspaceifstub.controller.PeriodsController.get(nino)
