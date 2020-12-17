@@ -18,14 +18,6 @@ package uk.gov.hmrc
 
 package object breathingspaceifstub {
 
-  val Details = "details(nino,dateOfBirth)"
-  val NameList = "nameList(name(firstForename,secondForename,surname))"
-  val AddressList =
-    "addressList(address(addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,addressPostcode,countryCode))"
-  val Indicators = "indicators(welshOutputInd)"
-
-  val fields = s"$Details,$NameList,$AddressList,$Indicators"
-
   object Header {
     lazy val CorrelationId = "CorrelationId"
     lazy val OriginatorId = "OriginatorId"
