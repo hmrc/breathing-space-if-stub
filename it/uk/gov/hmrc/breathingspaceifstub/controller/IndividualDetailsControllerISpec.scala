@@ -21,7 +21,7 @@ import scala.io.Source
 import play.api.http.Status
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.await
-import uk.gov.hmrc.breathingspaceifstub.{Detail0, Header}
+import uk.gov.hmrc.breathingspaceifstub.{fields, Header}
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
@@ -32,7 +32,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
   "GET /NINO/:nino" should {
     "return 200(OK) with the expected individual details when the Url provides the expected filter" in {
       val nino = "AS000001"
-      val response = makeGetRequest(getConnectionUrl(nino, Some(Detail0)))
+      val response = makeGetRequest(getConnectionUrl(nino, Some(fields)))
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
@@ -97,7 +97,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
     "ensure Nino suffix is ignored" in {
       withClue("With suffix") {
         val nino = "AS000001"
-        val response = makeGetRequest(getConnectionUrl(s"${nino}A", Some(Detail0)))
+        val response = makeGetRequest(getConnectionUrl(s"${nino}A", Some(fields)))
         response.status shouldBe Status.OK
         response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
@@ -105,7 +105,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
 
       withClue("Without suffix") {
         val nino = "AS000001"
-        val response = makeGetRequest(getConnectionUrl(nino, Some(Detail0)))
+        val response = makeGetRequest(getConnectionUrl(nino, Some(fields)))
         response.status shouldBe Status.OK
         response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
@@ -114,7 +114,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
 
     "return same CorrelationId as sent regardless of header name's letter case" in {
       withClue("Mixed case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(Detail0)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(fields)))
           .withHttpHeaders("CorrelationId" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -122,7 +122,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       }
 
       withClue("Lower case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(Detail0)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(fields)))
           .withHttpHeaders("correlationid" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -130,7 +130,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       }
 
       withClue("Upper case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(Detail0)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(fields)))
           .withHttpHeaders("CORRELATIONID" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
