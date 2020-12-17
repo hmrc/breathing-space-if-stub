@@ -22,8 +22,9 @@ package object breathingspaceifstub {
   val NameList = "nameList(name(firstForename,secondForename,surname))"
   val AddressList =
     "addressList(address(addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,addressPostcode,countryCode))"
+  val Indicators = "indicators(welshOutputInd)"
 
-  val Detail0 = s"$Details,$NameList,$AddressList"
+  val fields = s"$Details,$NameList,$AddressList,$Indicators"
 
   object Header {
     lazy val CorrelationId = "CorrelationId"

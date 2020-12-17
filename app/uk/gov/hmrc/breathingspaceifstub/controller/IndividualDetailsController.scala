@@ -22,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 import play.api.libs.json.Json
 import play.api.mvc._
-import uk.gov.hmrc.breathingspaceifstub.Detail0
+import uk.gov.hmrc.breathingspaceifstub
 import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -44,7 +44,7 @@ class IndividualDetailsController @Inject()(
       sendResponse(nino, getDataFromFile("individuals/DetailsPopulation.json"))
     } {
       _.replaceAll("\\s+", "") match {
-        case Detail0 => sendResponse(nino, getDataFromFile("individuals/Detail0Population.json"))
+        case breathingspaceifstub.fields => sendResponse(nino, getDataFromFile("individuals/Detail0Population.json"))
         case _ => sendResponse(UNPROCESSABLE_ENTITY, failures("UNKNOWN_DATA_ITEM"))
       }
     }
