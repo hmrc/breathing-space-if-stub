@@ -21,7 +21,8 @@ import scala.io.Source
 import play.api.http.Status
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.await
-import uk.gov.hmrc.breathingspaceifstub.{fields, Header}
+import uk.gov.hmrc.breathingspaceifstub.Header
+import uk.gov.hmrc.breathingspaceifstub.controller.IndividualDetailsController._
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.BaseISpec
 
@@ -32,9 +33,9 @@ class IndividualDetailsControllerISpec extends BaseISpec {
   "GET /NINO/:nino" should {
     "return 200(OK) with the expected individual details when the Url provides the expected filter" in {
       val nino = "AS000001"
-      val response = makeGetRequest(getConnectionUrl(nino, Some(fields)))
+      val response = makeGetRequest(getConnectionUrl(nino, Some(filter)))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
+      response.body shouldBe getExpectedResponseBody(nino, detailsForBreathingSpace)
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
@@ -42,16 +43,10 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       val nino = "AS000001"
       val response = makeGetRequest(getConnectionUrl(nino, None))
       response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody(nino, "DetailsPopulation.json")
+      response.body shouldBe getExpectedResponseBody(nino, fullPopulationDetails)
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 422(UNPROCESSABLE_ENTITY) when the Url provides an unexpected filter" in {
-      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
-      response.status shouldBe Status.UNPROCESSABLE_ENTITY
-      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
-    }
-    
     "return 400(BAD_REQUEST) when the Nino 'BS000400B' is sent" in {
       val response = makeGetRequest(getConnectionUrl("BS000400B"))
       response.status shouldBe Status.BAD_REQUEST
@@ -61,6 +56,12 @@ class IndividualDetailsControllerISpec extends BaseISpec {
     "return 404(NOT_FOUND) when the Nino 'BS000404B' is sent" in {
       val response = makeGetRequest(getConnectionUrl("BS000404B"))
       response.status shouldBe Status.NOT_FOUND
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 422(UNPROCESSABLE_ENTITY) when the Url provides an unexpected filter" in {
+      val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
+      response.status shouldBe Status.UNPROCESSABLE_ENTITY
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
@@ -97,24 +98,24 @@ class IndividualDetailsControllerISpec extends BaseISpec {
     "ensure Nino suffix is ignored" in {
       withClue("With suffix") {
         val nino = "AS000001"
-        val response = makeGetRequest(getConnectionUrl(s"${nino}A", Some(fields)))
+        val response = makeGetRequest(getConnectionUrl(s"${nino}A", Some(filter)))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
+        response.body shouldBe getExpectedResponseBody(nino, detailsForBreathingSpace)
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
 
       withClue("Without suffix") {
         val nino = "AS000001"
-        val response = makeGetRequest(getConnectionUrl(nino, Some(fields)))
+        val response = makeGetRequest(getConnectionUrl(nino, Some(filter)))
         response.status shouldBe Status.OK
-        response.body shouldBe getExpectedResponseBody(nino, "Detail0Population.json")
+        response.body shouldBe getExpectedResponseBody(nino, detailsForBreathingSpace)
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
 
     "return same CorrelationId as sent regardless of header name's letter case" in {
       withClue("Mixed case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(fields)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(filter)))
           .withHttpHeaders("CorrelationId" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -122,7 +123,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       }
 
       withClue("Lower case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(fields)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(filter)))
           .withHttpHeaders("correlationid" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -130,7 +131,7 @@ class IndividualDetailsControllerISpec extends BaseISpec {
       }
 
       withClue("Upper case") {
-        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(fields)))
+        val response = await(wsClient.url(getConnectionUrl("AS000001", Some(filter)))
           .withHttpHeaders("CORRELATIONID" -> correlationHeaderValue.value.get)
           .get())
         response.status shouldBe Status.OK
@@ -142,8 +143,8 @@ class IndividualDetailsControllerISpec extends BaseISpec {
   private def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId): WSResponse =
     await(wsClient.url(connectionUrl).withHttpHeaders(Header.CorrelationId -> correlationId.value.get).get())
 
-  private def getConnectionUrl(nino: String, fields: Option[String] = None): String = {
-    val queryString = fields.map(value => s"?fields=${value}").getOrElse("")
+  private def getConnectionUrl(nino: String, filter: Option[String] = None): String = {
+    val queryString = filter.map(value => s"?fields=${value}").getOrElse("")
     s"${testServerAddress}/individuals/details/NINO/${nino}${queryString}"
   }
 

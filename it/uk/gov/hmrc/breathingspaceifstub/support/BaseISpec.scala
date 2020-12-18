@@ -24,8 +24,10 @@ import org.scalatest.concurrent.Futures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Application
 import play.api.http.HeaderNames.CONTENT_TYPE
 import play.api.http.MimeTypes
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, Injecting}
@@ -40,6 +42,12 @@ trait BaseISpec
     with Injecting
     with Matchers
     with OptionValues {
+
+  val configProperties: Map[String, Any] = Map(
+    "full-population-details-enabled" -> true
+  )
+
+  override lazy val app: Application = GuiceApplicationBuilder().configure(configProperties).build()
 
   implicit lazy val materializer: Materializer = app.materializer
 
