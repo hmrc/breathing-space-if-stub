@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,9 @@ object IndividualDetailsController {
 
   val filter = {
     val Details = "details(nino,dateOfBirth)"
-    val NameList = "nameList(name(firstForename,secondForename,surname))"
+    val NameList = "nameList(name(firstForename,secondForename,surname,nameType))"
     val AddressList =
-      "addressList(address(addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,addressPostcode,countryCode))"
+      "addressList(address(addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,addressPostcode,countryCode,addressType))"
     val Indicators = "indicators(welshOutputInd)"
 
     s"$Details,$NameList,$AddressList,$Indicators"
