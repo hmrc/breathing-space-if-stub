@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.breathingspaceifstub.controller
 
+import java.util.UUID
+
 import scala.io.Source
 
 import play.api.http.Status
@@ -62,6 +64,18 @@ class DebtsControllerISpec extends BaseISpec {
       response.status shouldBe Status.OK
       response.body shouldBe getExpectedResponseBody("multipleBsDebtsMixedPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 400(BAD_REQUEST) when the url does not include the periodId" in {
+      val connectionUrl = s"${testServerAddress}/individuals/breathing-space/NINO/AS000005A/debts"
+      val response = makeGetRequest(connectionUrl)
+      response.status shouldBe Status.NOT_FOUND
+    }
+
+    "return 400(BAD_REQUEST) when the periodId is not a valid UUID" in {
+      val connectionUrl = s"${testServerAddress}/individuals/breathing-space/NINO/AS000005A/abc/debts"
+      val response = makeGetRequest(connectionUrl)
+      response.status shouldBe Status.BAD_REQUEST
     }
 
     "return 400(BAD_REQUEST) when the Nino 'BS000400B' is sent" in {
@@ -164,7 +178,7 @@ class DebtsControllerISpec extends BaseISpec {
       .get())
 
   private def getConnectionUrl(nino: String): String =
-    s"${testServerAddress}/individuals/breathing-space/NINO/${nino}/debts"
+    s"${testServerAddress}/individuals/breathing-space/NINO/${nino}/${UUID.randomUUID}/debts"
 
   private def getExpectedResponseBody(filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/debts/$filename")
