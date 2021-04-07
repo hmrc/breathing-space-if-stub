@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.breathingspaceifstub.controller
 
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,7 +33,7 @@ class DebtsController @Inject()(
     extends BackendController(cc)
     with ControllerSupport {
 
-  def get(nino: String): Action[AnyContent] = Action.async { implicit request =>
+  def get(nino: String, periodId: UUID): Action[AnyContent] = Action.async { implicit request =>
     composeResponse(nino, getAcceptedNinoHandler)
   }
 
