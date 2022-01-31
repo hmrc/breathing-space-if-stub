@@ -5,6 +5,7 @@ GET   /individuals/details/NINO/:nino  uk.gov.hmrc.breathingspaceifstub.controll
 # Production routes (BS Debts)
 # ============================
 GET   /individuals/breathing-space/NINO/:nino/:periodId/debts  uk.gov.hmrc.breathingspaceifstub.controller.DebtsController.get(nino, periodId: java.util.UUID)
+GET   /individuals/breathing-space/NINO/:nino/:periodId/coding-out-debts   uk.gov.hmrc.breathingspaceifstub.controller.UnderpaymentsController.get(nino, periodId: java.util.UUID)
 
 # Production routes (BS Periods)
 # ==============================
