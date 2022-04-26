@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.breathingspaceifstub.support
 
-import java.util.UUID
-
 import akka.stream.Materializer
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.Futures
@@ -28,11 +26,14 @@ import play.api.Application
 import play.api.http.HeaderNames.CONTENT_TYPE
 import play.api.http.MimeTypes
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.ws.WSClient
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.mvc.AnyContentAsEmpty
+import play.api.test.Helpers.await
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, Injecting}
 import uk.gov.hmrc.breathingspaceifstub._
-import uk.gov.hmrc.breathingspaceifstub.model.Attended
+import uk.gov.hmrc.breathingspaceifstub.model.{Attended, CorrelationId}
+
+import java.util.UUID
 
 trait BaseISpec
   extends AnyWordSpec
@@ -66,4 +67,25 @@ trait BaseISpec
 
   def requestWithHeaders(method: String, path: String): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(method, path).withHeaders(validHeaders: _*)
+
+  def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId): WSResponse =
+    await(wsClient.url(connectionUrl)
+      .withHttpHeaders(Header.CorrelationId -> correlationId.value.get)
+      .get())
+
+  def makePutRequest(connectionUrl: String, bodyContents: String = "{}")(implicit correlationId: CorrelationId): WSResponse =
+    await(wsClient.url(connectionUrl)
+      .withHttpHeaders(
+        Header.CorrelationId -> correlationId.value.get,
+        "Content-Type" -> "application/json"
+      )
+      .put(bodyContents))
+
+  def makePostRequest(connectionUrl: String, bodyContents: String = "{}")(implicit correlationId: CorrelationId): WSResponse =
+    await(wsClient.url(connectionUrl)
+      .withHttpHeaders(
+        Header.CorrelationId -> correlationId.value.get,
+        "Content-Type" -> "application/json"
+      )
+      .post(bodyContents))
 }
