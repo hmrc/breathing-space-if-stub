@@ -12,3 +12,7 @@ GET   /individuals/breathing-space/:nino/:periodId/coding-out-debts   uk.gov.hmr
 GET   /individuals/breathing-space/NINO/:nino/periods  uk.gov.hmrc.breathingspaceifstub.controller.PeriodsController.get(nino)
 POST  /individuals/breathing-space/NINO/:nino/periods  uk.gov.hmrc.breathingspaceifstub.controller.PeriodsController.post(nino)
 PUT   /individuals/breathing-space/NINO/:nino/periods  uk.gov.hmrc.breathingspaceifstub.controller.PeriodsController.put(nino)
+
+# Production routes (BS Memorandum)
+# ==============================
+GET   /individuals/breathing-space/NINO/:nino/memorandum  uk.gov.hmrc.breathingspaceifstub.controller.MemorandumController.get(nino)
