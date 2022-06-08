@@ -15,4 +15,4 @@ PUT   /individuals/breathing-space/NINO/:nino/periods  uk.gov.hmrc.breathingspac
 
 # Production routes (BS Memorandum)
 # ==============================
-GET   /individuals/breathing-space/NINO/:nino/memorandum  uk.gov.hmrc.breathingspaceifstub.controller.MemorandumController.get(nino)
+GET   /individuals/breathing-space/:nino/memorandum  uk.gov.hmrc.breathingspaceifstub.controller.MemorandumController.get(nino)
