@@ -56,7 +56,7 @@ class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {
   }
 
   private def getConnectionUrl(nino: String): String =
-    s"${testServerAddress}/individuals/breathing-space/NINO/${nino}/memorandum"
+    s"${testServerAddress}/individuals/breathing-space/${nino}/memorandum"
 
   private def getExpectedResponseBody(filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/memorandum/$filename")
