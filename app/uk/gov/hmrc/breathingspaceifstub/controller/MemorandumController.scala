@@ -40,6 +40,9 @@ class MemorandumController @Inject()(
     nino match {
       case "AS000001" => sendResponse(OK, jsonDataFromFile("hasBreathingSpaceIndicator.json"))
       case "AS000002" => sendResponse(OK, jsonDataFromFile("noBreathingSpaceIndicator.json"))
+      case "AA000333" => sendResponse(OK, jsonDataFromFile("hasBreathingSpaceIndicator.json"))
+      case "AS000003" => sendResponse(UNPROCESSABLE_ENTITY, failures("UNKNOWN_DATA_ITEM"))
+      case "AS000004" => sendResponse(BAD_GATEWAY, failures("BAD_GATEWAY"))
       case _ => sendResponse(NOT_FOUND, failures("NO_DATA_FOUND", "No records found for the given Nino"))
     }
 
