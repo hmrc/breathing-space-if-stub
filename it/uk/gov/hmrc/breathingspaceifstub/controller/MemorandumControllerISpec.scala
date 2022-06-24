@@ -49,8 +49,25 @@ class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
-    "return 404(NOT_FOUND) when the Nino 'AS000003A' is sent" in {
+    "return 200(OK) with breathing space indicator false when the Nino 'AA000333A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AA000333A"))
+      response.status shouldBe Status.OK
+      response.body shouldBe getExpectedResponseBody("hasBreathingSpaceIndicator.json")
+      response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
+    }
+
+    "return 422(UNKNOWN_DATA_ITEM) with breathing space indicator false when the Nino 'AS000003A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000003A"))
+      response.status shouldBe Status.UNPROCESSABLE_ENTITY
+    }
+
+    "return 502(BAD_GATEWAY) with breathing space indicator false when the Nino 'AS000004A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000004A"))
+      response.status shouldBe Status.BAD_GATEWAY
+    }
+
+    "return 404(NOT_FOUND) when the Nino 'AS000005A' is sent" in {
+      val response = makeGetRequest(getConnectionUrl("AS000005A"))
       response.status shouldBe Status.NOT_FOUND
     }
   }
@@ -64,7 +81,7 @@ class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {
       .getLines
       .map( // remove pre padding whitespace & post colon whitespace from each line (but not whitespaces from values)
         _.replaceAll("^[ \\t]+", "")
-         .replaceAll(":[ \\t]+", ":")
+          .replaceAll(":[ \\t]+", ":")
       )
       .mkString
   }
