@@ -21,7 +21,6 @@ import play.api.mvc._
 import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
-import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 

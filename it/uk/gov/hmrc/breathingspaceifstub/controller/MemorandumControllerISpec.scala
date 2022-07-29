@@ -17,12 +17,10 @@
 package uk.gov.hmrc.breathingspaceifstub.controller
 
 import play.api.http.Status
-import play.api.test.Helpers.await
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
 
-import java.util.UUID
 import scala.io.Source
 
 class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {

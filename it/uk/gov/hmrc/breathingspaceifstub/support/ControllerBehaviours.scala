@@ -18,7 +18,6 @@ package uk.gov.hmrc.breathingspaceifstub.support
 
 import play.api.http.Status
 import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.await
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 
