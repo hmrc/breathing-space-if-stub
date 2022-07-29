@@ -16,14 +16,13 @@
 
 package uk.gov.hmrc.breathingspaceifstub.controller
 
-import scala.io.Source
 import play.api.http.Status
-import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.await
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.controller.IndividualDetailsController._
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
+
+import scala.io.Source
 
 class IndividualDetailsControllerISpec extends BaseISpec with ControllerBehaviours {
 
