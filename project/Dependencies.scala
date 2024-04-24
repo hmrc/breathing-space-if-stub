@@ -1,21 +1,18 @@
-import play.core.PlayVersion.current
 import sbt._
 
 object Dependencies {
 
-  val bootstrapVersion = "6.4.0"
+  val bootstrapVersion = "8.5.0"
+  val playVersion = "play-30"
 
   val compile = Seq(
-    "uk.gov.hmrc"                  %% "bootstrap-backend-play-28"  % bootstrapVersion,
-    "com.beachape"                 %% "enumeratum"                 % "1.7.0",
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.13.3"
+    "uk.gov.hmrc"                  %% s"bootstrap-backend-$playVersion"  % bootstrapVersion
   )
 
   val test = Seq(
-    "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapVersion % "it",
-    "com.vladsch.flexmark"   %  "flexmark-all"           % "0.62.2" % "it",
-    "com.typesafe.play"      %% "play-test"              % current  % "it",
-    "org.scalatest"          %% "scalatest"              % "3.2.12"  % "it",
-    "org.scalatestplus.play" %% "scalatestplus-play"     % "5.1.0"  % "it"
+    "uk.gov.hmrc"            %% s"bootstrap-test-$playVersion" % bootstrapVersion,
+    "com.vladsch.flexmark"   %  "flexmark-all"           % "0.62.2",
+    "org.scalatest"          %% "scalatest"              % "3.2.12",
+    "org.scalatestplus.play" %% "scalatestplus-play"     % "5.1.0"
   )
 }

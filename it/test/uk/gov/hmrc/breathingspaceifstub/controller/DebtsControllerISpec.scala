@@ -30,9 +30,9 @@ class DebtsControllerISpec extends BaseISpec with ControllerBehaviours {
 
   "GET /NINO/:nino/debts" should {
 
-    behave like aNinoAsErrorCodeEndpoint(s => makeGetRequest(getConnectionUrl(s)))
-    behave like acceptsCorrelationId(makeGetRequest(getConnectionUrl("AS000001A")))
-    behave like ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s)))
+    behave.like(aNinoAsErrorCodeEndpoint(s => makeGetRequest(getConnectionUrl(s))))
+    behave.like(acceptsCorrelationId(makeGetRequest(getConnectionUrl("AS000001A"))))
+    behave.like(ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s))))
 
     "return 200(OK) with a single debt (full population) when the Nino 'AS000001A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A"))
@@ -96,11 +96,12 @@ class DebtsControllerISpec extends BaseISpec with ControllerBehaviours {
 
   private def getExpectedResponseBody(filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/debts/$filename")
-    Source.fromInputStream(in)
+    Source
+      .fromInputStream(in)
       .getLines
       .map( // remove pre padding whitespace & post colon whitespace from each line (but not whitespaces from values)
         _.replaceAll("^[ \\t]+", "")
-         .replaceAll(":[ \\t]+", ":")
+          .replaceAll(":[ \\t]+", ":")
       )
       .mkString
   }

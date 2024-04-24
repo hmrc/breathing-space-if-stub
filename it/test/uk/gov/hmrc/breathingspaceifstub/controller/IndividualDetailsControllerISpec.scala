@@ -30,9 +30,9 @@ class IndividualDetailsControllerISpec extends BaseISpec with ControllerBehaviou
 
   "GET /NINO/:nino" should {
 
-    behave like aNinoAsErrorCodeEndpoint(s => makeGetRequest(getConnectionUrl(s, Some(filter))))
-    behave like acceptsCorrelationId(makeGetRequest(getConnectionUrl("AS000001A")))
-    behave like ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s, Some(filter))))
+    behave.like(aNinoAsErrorCodeEndpoint(s => makeGetRequest(getConnectionUrl(s, Some(filter)))))
+    behave.like(acceptsCorrelationId(makeGetRequest(getConnectionUrl("AS000001A"))))
+    behave.like(ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s, Some(filter)))))
 
     "return 200(OK) with the expected individual details when the Url provides the expected filter" in {
       val nino = "AS000001"
@@ -64,7 +64,8 @@ class IndividualDetailsControllerISpec extends BaseISpec with ControllerBehaviou
 
   private def getExpectedResponseBody(nino: String, filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/individuals/$filename")
-    Source.fromInputStream(in)
+    Source
+      .fromInputStream(in)
       .getLines
       .map( // remove pre padding whitespace & post colon whitespace from each line (but not whitespaces from values)
         _.replaceAll("^[ \\t]+", "")

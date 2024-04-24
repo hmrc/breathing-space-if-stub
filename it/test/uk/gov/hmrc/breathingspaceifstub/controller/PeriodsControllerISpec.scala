@@ -29,9 +29,9 @@ class PeriodsControllerISpec extends BaseISpec with ControllerBehaviours {
 
   "GET /NINO/:nino/periods" should {
 
-    behave like aNinoAsErrorCodeEndpoint(s => makeGetRequest(getConnectionUrl(s)))
-    behave like acceptsCorrelationId(makeGetRequest(getConnectionUrl("AS000001A")))
-    behave like ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s)))
+    behave.like(aNinoAsErrorCodeEndpoint(s => makeGetRequest(getConnectionUrl(s))))
+    behave.like(acceptsCorrelationId(makeGetRequest(getConnectionUrl("AS000001A"))))
+    behave.like(ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s))))
 
     "return 200(OK) with a single period (full population) when the Nino 'AS000001A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A"))
@@ -95,12 +95,13 @@ class PeriodsControllerISpec extends BaseISpec with ControllerBehaviours {
   "POST /NINO/:nino/periods" should {
 
     val period1 = """{"startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
-    val period2 = """{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
+    val period2 =
+      """{"startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
     val bodyContents = s"""{"periods":[$period1,$period2]}"""
 
-    behave like aNinoAsErrorCodeEndpoint(s => makePostRequest(getConnectionUrl(s), bodyContents))
-    behave like acceptsCorrelationId(makePostRequest(getConnectionUrl("AS000001A"), bodyContents), Status.CREATED)
-    behave like ninoSuffixIgnored(s => makePostRequest(getConnectionUrl(s), bodyContents), Status.CREATED)
+    behave.like(aNinoAsErrorCodeEndpoint(s => makePostRequest(getConnectionUrl(s), bodyContents)))
+    behave.like(acceptsCorrelationId(makePostRequest(getConnectionUrl("AS000001A"), bodyContents), Status.CREATED))
+    behave.like(ninoSuffixIgnored(s => makePostRequest(getConnectionUrl(s), bodyContents), Status.CREATED))
 
     "return 201(CREATED) with the periods sent when any accepted Nino value is sent" in {
       val response = makePostRequest(getConnectionUrl("AS000400A"), bodyContents)
@@ -132,12 +133,13 @@ class PeriodsControllerISpec extends BaseISpec with ControllerBehaviours {
     val periodId1 = """"periodID": "4043d4b5-1f2a-4d10-8878-ef1ce9d97b32""""
     val periodId2 = """"periodID": "6aed4f02-f652-4bef-af14-49c79e968c2e""""
     val period1 = s"""{$periodId1, "startDate":"2020-06-25","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
-    val period2 = s"""{$periodId2, "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
+    val period2 =
+      s"""{$periodId2, "startDate":"2020-06-22","endDate":"2020-08-22","pegaRequestTimestamp":"2020-12-22T14:19:03+01:00"}"""
     val bodyContents = s"""{"periods":[$period1,$period2]}"""
 
-    behave like aNinoAsErrorCodeEndpoint(s => makePutRequest(getConnectionUrl(s), bodyContents))
-    behave like acceptsCorrelationId(makePutRequest(getConnectionUrl("AS000001A"), bodyContents))
-    behave like ninoSuffixIgnored(s => makePutRequest(getConnectionUrl(s), bodyContents))
+    behave.like(aNinoAsErrorCodeEndpoint(s => makePutRequest(getConnectionUrl(s), bodyContents)))
+    behave.like(acceptsCorrelationId(makePutRequest(getConnectionUrl("AS000001A"), bodyContents)))
+    behave.like(ninoSuffixIgnored(s => makePutRequest(getConnectionUrl(s), bodyContents)))
 
     "return 200(OK) with the periods sent when any accepted Nino value is sent" in {
       val response = makePutRequest(getConnectionUrl("AS000400A"), bodyContents)
