@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.breathingspaceifstub.support
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.Futures
 import org.scalatest.matchers.should.Matchers
@@ -36,7 +36,7 @@ import uk.gov.hmrc.breathingspaceifstub.model.{Attended, CorrelationId}
 import java.util.UUID
 
 trait BaseISpec
-  extends AnyWordSpec
+    extends AnyWordSpec
     with DefaultAwaitTimeout
     with Futures
     with GuiceOneServerPerSuite
@@ -69,23 +69,36 @@ trait BaseISpec
     FakeRequest(method, path).withHeaders(validHeaders: _*)
 
   def makeGetRequest(connectionUrl: String)(implicit correlationId: CorrelationId): WSResponse =
-    await(wsClient.url(connectionUrl)
-      .withHttpHeaders(Header.CorrelationId -> correlationId.value.get)
-      .get())
+    await(
+      wsClient
+        .url(connectionUrl)
+        .withHttpHeaders(Header.CorrelationId -> correlationId.value.get)
+        .get()
+    )
 
-  def makePutRequest(connectionUrl: String, bodyContents: String = "{}")(implicit correlationId: CorrelationId): WSResponse =
-    await(wsClient.url(connectionUrl)
-      .withHttpHeaders(
-        Header.CorrelationId -> correlationId.value.get,
-        "Content-Type" -> "application/json"
-      )
-      .put(bodyContents))
+  def makePutRequest(connectionUrl: String, bodyContents: String = "{}")(
+    implicit correlationId: CorrelationId
+  ): WSResponse =
+    await(
+      wsClient
+        .url(connectionUrl)
+        .withHttpHeaders(
+          Header.CorrelationId -> correlationId.value.get,
+          "Content-Type" -> "application/json"
+        )
+        .put(bodyContents)
+    )
 
-  def makePostRequest(connectionUrl: String, bodyContents: String = "{}")(implicit correlationId: CorrelationId): WSResponse =
-    await(wsClient.url(connectionUrl)
-      .withHttpHeaders(
-        Header.CorrelationId -> correlationId.value.get,
-        "Content-Type" -> "application/json"
-      )
-      .post(bodyContents))
+  def makePostRequest(connectionUrl: String, bodyContents: String = "{}")(
+    implicit correlationId: CorrelationId
+  ): WSResponse =
+    await(
+      wsClient
+        .url(connectionUrl)
+        .withHttpHeaders(
+          Header.CorrelationId -> correlationId.value.get,
+          "Content-Type" -> "application/json"
+        )
+        .post(bodyContents)
+    )
 }

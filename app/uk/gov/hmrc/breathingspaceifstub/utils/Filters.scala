@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.breathingspaceifstub.utils
 
+import org.apache.pekko.stream.Materializer
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
-
-import akka.stream.Materializer
-import com.kenshoo.play.metrics.MetricsFilter
 import org.slf4j.LoggerFactory
 import play.api.http.DefaultHttpFilters
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.filters.{AuditFilter, CacheControlFilter, LoggingFilter, MDCFilter}
+import uk.gov.hmrc.play.bootstrap.metrics.MetricsFilter
 
 class Filters @Inject()(
   metricsFilter: MetricsFilter,

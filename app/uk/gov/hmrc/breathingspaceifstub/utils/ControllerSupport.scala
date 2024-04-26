@@ -55,12 +55,12 @@ trait ControllerSupport extends Results with Logging {
 
   def getDataFromFile(filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/$filename")
-    Source.fromInputStream(in).getLines.mkString
+    Source.fromInputStream(in).getLines().mkString
   }
 
   def getJsonDataFromFile(filename: String): JsValue = {
     val in = getClass.getResourceAsStream(s"/data/$filename")
-    val raw = Source.fromInputStream(in).getLines.mkString
+    val raw = Source.fromInputStream(in).getLines().mkString
     Json.parse(raw)
   }
 

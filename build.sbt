@@ -1,32 +1,35 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
+import uk.gov.hmrc.DefaultBuildSettings
+import uk.gov.hmrc.DefaultBuildSettings.*
 
 val appName = "breathing-space-if-stub"
 
 val silencerVersion = "1.7.1"
 
+ThisBuild / majorVersion := 1
+ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / scalafmtOnCompile := true
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
+  .disablePlugins(JUnitXmlReportPlugin)
   .settings(
-    majorVersion             := 0,
-    scalaVersion             := "2.13.8",
     PlayKeys.playDefaultPort := 9503,
     libraryDependencies      ++= Dependencies.compile ++ Dependencies.test,
     scalacOptions ++= Seq("-feature")
   )
-  .configs(IntegrationTest)
-  .settings(publishingSettings: _*)
-  .settings(integrationTestSettings(): _*)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     scoverageSettings,
     Compile / scalafmtOnCompile := true,
     Test / scalafmtOnCompile := true
   )
 
-scalastyleConfig := baseDirectory.value / "project" / "scalastyle-config.xml"
-
-IntegrationTest / unmanagedResourceDirectories += baseDirectory.value / "it" / "resources"
+lazy val it = project
+  .enablePlugins(play.sbt.PlayScala)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(
+    libraryDependencies ++= Dependencies.test,
+    DefaultBuildSettings.itSettings()
+  )
 
 lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   coverageExcludedPackages := List(
@@ -35,7 +38,6 @@ lazy val scoverageSettings: Seq[Setting[_]] = Seq(
   ).mkString(";"),
   coverageMinimumStmtTotal := 96,
   coverageFailOnMinimum := false,
-  coverageHighlighting := true,
-  parallelExecution in Test := false
+  coverageHighlighting := true
 )
 

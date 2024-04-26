@@ -70,8 +70,7 @@ trait ControllerBehaviours { this: BaseISpec =>
     }
   }
 
-  def acceptsCorrelationId(response: WSResponse, expectedStatus: Int = Status.OK): Unit = {
-
+  def acceptsCorrelationId(response: WSResponse, expectedStatus: Int = Status.OK): Unit =
     "return same CorrelationId as sent regardless of header name's letter case" in {
       withClue("Mixed case") {
         response.status shouldBe expectedStatus
@@ -88,10 +87,8 @@ trait ControllerBehaviours { this: BaseISpec =>
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
-  }
 
-  def ninoSuffixIgnored(wsResponse: String => WSResponse, expectedStatus: Int = Status.OK): Unit = {
-
+  def ninoSuffixIgnored(wsResponse: String => WSResponse, expectedStatus: Int = Status.OK): Unit =
     "ensure Nino suffix is ignored" in {
       withClue("With suffix") {
         val response = wsResponse("AS000001A")
@@ -105,5 +102,4 @@ trait ControllerBehaviours { this: BaseISpec =>
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
     }
-  }
 }
