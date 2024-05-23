@@ -15,7 +15,18 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     PlayKeys.playDefaultPort := 9503,
     libraryDependencies      ++= Dependencies.compile ++ Dependencies.test,
-    scalacOptions ++= Seq("-feature")
+    scalacOptions ++= Seq(
+      "-Werror",
+      "-Wdead-code",
+      "-Wunused:_",
+      "-Wextra-implicit",
+      "-feature",
+      "-Wconf:cat=unused&src=.*Controller\\.scala:s",
+      "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
+      "-Wconf:cat=unused&src=.*Routes\\.scala:s",
+      "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
+      "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
+      "-Wconf:src=routes/.*:s")
   )
   .settings(
     scoverageSettings,
