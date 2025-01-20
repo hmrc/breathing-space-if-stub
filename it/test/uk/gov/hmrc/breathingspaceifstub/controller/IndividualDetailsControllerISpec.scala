@@ -21,7 +21,7 @@ import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.controller.IndividualDetailsController._
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
-
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import scala.io.Source
 
 class IndividualDetailsControllerISpec extends BaseISpec with ControllerBehaviours {

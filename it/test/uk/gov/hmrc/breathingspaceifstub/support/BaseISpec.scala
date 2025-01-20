@@ -32,7 +32,7 @@ import play.api.test.Helpers.await
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, Injecting}
 import uk.gov.hmrc.breathingspaceifstub._
 import uk.gov.hmrc.breathingspaceifstub.model.{Attended, CorrelationId}
-
+import play.api.libs.ws.writeableOf_String
 import java.util.UUID
 
 trait BaseISpec

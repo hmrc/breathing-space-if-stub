@@ -17,6 +17,7 @@
 package uk.gov.hmrc.breathingspaceifstub.controller
 
 import play.api.http.Status
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
