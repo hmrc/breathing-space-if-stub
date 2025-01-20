@@ -1,5 +1,4 @@
 import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.DefaultBuildSettings.*
 
 val appName = "breathing-space-if-stub"
 
@@ -10,7 +9,7 @@ ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / scalafmtOnCompile := true
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     PlayKeys.playDefaultPort := 9503,
