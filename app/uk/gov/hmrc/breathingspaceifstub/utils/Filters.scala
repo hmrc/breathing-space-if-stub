@@ -25,7 +25,7 @@ import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.filters.{AuditFilter, CacheControlFilter, LoggingFilter, MDCFilter}
 import uk.gov.hmrc.play.bootstrap.metrics.MetricsFilter
 
-class Filters @Inject()(
+class Filters @Inject() (
   metricsFilter: MetricsFilter,
   auditFilter: AuditFilter,
   loggingFilter: LoggingFilter,
@@ -42,7 +42,7 @@ class Filters @Inject()(
       new StubRequestLoggingFilter()
     )
 
-class StubRequestLoggingFilter @Inject()(implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
+class StubRequestLoggingFilter @Inject() (implicit val mat: Materializer, ec: ExecutionContext) extends Filter {
 
   lazy val logger = LoggerFactory.getLogger(this.getClass)
 
