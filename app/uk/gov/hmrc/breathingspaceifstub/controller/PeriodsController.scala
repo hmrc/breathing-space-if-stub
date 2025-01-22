@@ -28,7 +28,7 @@ import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
-class PeriodsController @Inject()(
+class PeriodsController @Inject() (
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
     extends BackendController(cc)
@@ -53,7 +53,7 @@ class PeriodsController @Inject()(
       case "AS000003" => sendResponse(OK, jsonDataFromFile("multipleBsPeriodsFullPopulation.json"))
       case "AS000004" => sendResponse(OK, jsonDataFromFile("multipleBsPeriodsPartialPopulation.json"))
       case "AS000005" => sendResponse(OK, jsonDataFromFile("multipleBsPeriodsMixedPopulation.json"))
-      case _ => sendResponse(OK, Json.parse("""{"periods":[]}"""))
+      case _          => sendResponse(OK, Json.parse("""{"periods":[]}"""))
     }
 
   def withBodyAcceptedNinoHandler(
@@ -79,17 +79,16 @@ class PeriodsController @Inject()(
 
   def transformRequestJsonToResponseJson(jsValue: JsValue, addPeriodIdField: Boolean): JsResult[JsObject] = {
     val attrTransformer = (__ \ "periods").json.update {
-      __.read[JsArray].map {
-        case JsArray(values) =>
-          val updatedValues = values.map { period =>
-            val retainedFields = period.as[JsObject].fields.filter(_._1 != "pegaRequestTimestamp")
-            val additionalFields =
-              if (addPeriodIdField) Seq(("periodID", JsString(UUID.randomUUID().toString))) else Seq.empty
+      __.read[JsArray].map { case JsArray(values) =>
+        val updatedValues = values.map { period =>
+          val retainedFields   = period.as[JsObject].fields.filter(_._1 != "pegaRequestTimestamp")
+          val additionalFields =
+            if (addPeriodIdField) Seq(("periodID", JsString(UUID.randomUUID().toString))) else Seq.empty
 
-            JsObject(additionalFields ++ retainedFields)
-          }
+          JsObject(additionalFields ++ retainedFields)
+        }
 
-          JsArray(updatedValues)
+        JsArray(updatedValues)
       }
     }
 

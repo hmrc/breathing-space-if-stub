@@ -20,7 +20,7 @@ import play.api.http.Status
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
-
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import java.util.UUID
 import scala.io.Source
 
@@ -36,55 +36,55 @@ class DebtsControllerISpec extends BaseISpec with ControllerBehaviours {
 
     "return 200(OK) with a single debt (full population) when the Nino 'AS000001A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("singleBsDebtFullPopulation.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("singleBsDebtFullPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with a single debt (partial population) when the Nino 'AS000002A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000002A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("singleBsDebtPartialPopulation.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("singleBsDebtPartialPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with multiple debts (all full population) when the Nino 'AS000003A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000003A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("multipleBsDebtsFullPopulation.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("multipleBsDebtsFullPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with multiple debts (all partial population) when the Nino 'AS000004A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000004A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("multipleBsDebtsPartialPopulation.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("multipleBsDebtsPartialPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with multiple debts (mixed population) when the Nino 'AS000005A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000005A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("multipleBsDebtsMixedPopulation.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("multipleBsDebtsMixedPopulation.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 400(BAD_REQUEST) when the url does not include the periodId" in {
-      val connectionUrl = s"${testServerAddress}/individuals/breathing-space/NINO/AS000005A/debts"
-      val response = makeGetRequest(connectionUrl)
+      val connectionUrl = s"$testServerAddress/individuals/breathing-space/NINO/AS000005A/debts"
+      val response      = makeGetRequest(connectionUrl)
       response.status shouldBe Status.NOT_FOUND
     }
 
     "return 400(BAD_REQUEST) when the periodId is not a valid UUID" in {
-      val connectionUrl = s"${testServerAddress}/individuals/breathing-space/NINO/AS000005A/abc/debts"
-      val response = makeGetRequest(connectionUrl)
+      val connectionUrl = s"$testServerAddress/individuals/breathing-space/NINO/AS000005A/abc/debts"
+      val response      = makeGetRequest(connectionUrl)
       response.status shouldBe Status.BAD_REQUEST
     }
 
     "return 404(NO_DATA_FOUND) when the Nino specified is unknown " in {
       withClue("MA000700A") {
         val response = makeGetRequest(getConnectionUrl("MA000700A"))
-        response.status shouldBe Status.NOT_FOUND
+        response.status                       shouldBe Status.NOT_FOUND
         assert(response.body.startsWith("""{"failures":[{"code":"NO_DATA_FOUND","reason":"""))
         response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
       }
@@ -92,7 +92,7 @@ class DebtsControllerISpec extends BaseISpec with ControllerBehaviours {
   }
 
   private def getConnectionUrl(nino: String): String =
-    s"${testServerAddress}/individuals/breathing-space/NINO/${nino}/${UUID.randomUUID}/debts"
+    s"$testServerAddress/individuals/breathing-space/NINO/$nino/${UUID.randomUUID}/debts"
 
   private def getExpectedResponseBody(filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/debts/$filename")

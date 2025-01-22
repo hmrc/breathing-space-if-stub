@@ -32,7 +32,7 @@ import play.api.test.Helpers.await
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, Injecting}
 import uk.gov.hmrc.breathingspaceifstub._
 import uk.gov.hmrc.breathingspaceifstub.model.{Attended, CorrelationId}
-
+import play.api.libs.ws.writeableOf_String
 import java.util.UUID
 
 trait BaseISpec
@@ -59,10 +59,10 @@ trait BaseISpec
   lazy val correlationId = UUID.randomUUID().toString
 
   lazy val validHeaders = List(
-    CONTENT_TYPE -> MimeTypes.JSON,
+    CONTENT_TYPE         -> MimeTypes.JSON,
     Header.CorrelationId -> correlationId,
-    Header.OriginatorId -> Attended.DA2_BS_ATTENDED.toString,
-    Header.UserId -> "1234567"
+    Header.OriginatorId  -> Attended.DA2_BS_ATTENDED.toString,
+    Header.UserId        -> "1234567"
   )
 
   def requestWithHeaders(method: String, path: String): FakeRequest[AnyContentAsEmpty.type] =
@@ -76,28 +76,28 @@ trait BaseISpec
         .get()
     )
 
-  def makePutRequest(connectionUrl: String, bodyContents: String = "{}")(
-    implicit correlationId: CorrelationId
+  def makePutRequest(connectionUrl: String, bodyContents: String = "{}")(implicit
+    correlationId: CorrelationId
   ): WSResponse =
     await(
       wsClient
         .url(connectionUrl)
         .withHttpHeaders(
           Header.CorrelationId -> correlationId.value.get,
-          "Content-Type" -> "application/json"
+          "Content-Type"       -> "application/json"
         )
         .put(bodyContents)
     )
 
-  def makePostRequest(connectionUrl: String, bodyContents: String = "{}")(
-    implicit correlationId: CorrelationId
+  def makePostRequest(connectionUrl: String, bodyContents: String = "{}")(implicit
+    correlationId: CorrelationId
   ): WSResponse =
     await(
       wsClient
         .url(connectionUrl)
         .withHttpHeaders(
           Header.CorrelationId -> correlationId.value.get,
-          "Content-Type" -> "application/json"
+          "Content-Type"       -> "application/json"
         )
         .post(bodyContents)
     )

@@ -21,7 +21,7 @@ import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.controller.IndividualDetailsController._
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
-
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import scala.io.Source
 
 class IndividualDetailsControllerISpec extends BaseISpec with ControllerBehaviours {
@@ -35,31 +35,31 @@ class IndividualDetailsControllerISpec extends BaseISpec with ControllerBehaviou
     behave.like(ninoSuffixIgnored(s => makeGetRequest(getConnectionUrl(s, Some(filter)))))
 
     "return 200(OK) with the expected individual details when the Url provides the expected filter" in {
-      val nino = "AS000001"
+      val nino     = "AS000001"
       val response = makeGetRequest(getConnectionUrl(nino, Some(filter)))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody(nino, detailsForBreathingSpace)
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody(nino, detailsForBreathingSpace)
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with a individual details (full population) when the Url does not provide a filter" in {
-      val nino = "AS000001"
+      val nino     = "AS000001"
       val response = makeGetRequest(getConnectionUrl(nino, None))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody(nino, fullPopulationDetails)
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody(nino, fullPopulationDetails)
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 422(UNPROCESSABLE_ENTITY) when the Url provides an unexpected filter" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A", Some("details(nino,dateOfBirth,cnrIndicator)")))
-      response.status shouldBe Status.UNPROCESSABLE_ENTITY
+      response.status                       shouldBe Status.UNPROCESSABLE_ENTITY
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
   }
 
   private def getConnectionUrl(nino: String, filter: Option[String] = None): String = {
-    val queryString = filter.map(value => s"?fields=${value}").getOrElse("")
-    s"${testServerAddress}/individuals/details/NINO/${nino}${queryString}"
+    val queryString = filter.map(value => s"?fields=$value").getOrElse("")
+    s"$testServerAddress/individuals/details/NINO/$nino$queryString"
   }
 
   private def getExpectedResponseBody(nino: String, filename: String): String = {

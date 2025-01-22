@@ -26,7 +26,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class UnderpaymentsController @Inject()(cc: ControllerComponents)(implicit val ec: ExecutionContext)
+class UnderpaymentsController @Inject() (cc: ControllerComponents)(implicit val ec: ExecutionContext)
     extends BackendController(cc)
     with ControllerSupport {
 
@@ -42,7 +42,7 @@ class UnderpaymentsController @Inject()(cc: ControllerComponents)(implicit val e
     (nino, periodId) match {
       case ("AS000001", "648ea46e-8027-11ec-b614-03845253624e") =>
         sendResponse(OK, jsonDataFromFile("underpayments1.json"))
-      case _ => sendResponse(NOT_FOUND, failures(s"NO_DATA_FOUND", s"$nino or $periodId did not match"))
+      case _                                                    => sendResponse(NOT_FOUND, failures(s"NO_DATA_FOUND", s"$nino or $periodId did not match"))
     }
   }
 }

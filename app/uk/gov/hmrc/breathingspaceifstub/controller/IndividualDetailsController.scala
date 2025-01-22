@@ -27,7 +27,7 @@ import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
-class IndividualDetailsController @Inject()(
+class IndividualDetailsController @Inject() (
   configuration: Configuration,
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
@@ -62,15 +62,15 @@ class IndividualDetailsController @Inject()(
 object IndividualDetailsController {
 
   val filter = {
-    val Details = "details(nino,dateOfBirth)"
-    val NameList = "nameList(name(firstForename,secondForename,surname,nameType))"
+    val Details     = "details(nino,dateOfBirth)"
+    val NameList    = "nameList(name(firstForename,secondForename,surname,nameType))"
     val AddressList =
       "addressList(address(addressLine1,addressLine2,addressLine3,addressLine4,addressLine5,addressPostcode,countryCode,addressType))"
-    val Indicators = "indicators(welshOutputInd)"
+    val Indicators  = "indicators(welshOutputInd)"
 
     s"$Details,$NameList,$AddressList,$Indicators"
   }
 
-  val fullPopulationDetails = "IndividualDetails.json"
+  val fullPopulationDetails    = "IndividualDetails.json"
   val detailsForBreathingSpace = "IndividualDetailsForBS.json"
 }

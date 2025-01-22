@@ -1,32 +1,33 @@
 import uk.gov.hmrc.DefaultBuildSettings
-import uk.gov.hmrc.DefaultBuildSettings.*
 
 val appName = "breathing-space-if-stub"
 
 val silencerVersion = "1.7.1"
 
-ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.12"
+ThisBuild / majorVersion := 2
+ThisBuild / scalaVersion := "3.3.4"
 ThisBuild / scalafmtOnCompile := true
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
     PlayKeys.playDefaultPort := 9503,
     libraryDependencies      ++= Dependencies.compile ++ Dependencies.test,
     scalacOptions ++= Seq(
-      "-Werror",
-      "-Wdead-code",
-      "-Wunused:_",
-      "-Wextra-implicit",
       "-feature",
-      "-Wconf:cat=unused&src=.*Controller\\.scala:s",
-      "-Wconf:cat=unused&src=.*RoutesPrefix\\.scala:s",
-      "-Wconf:cat=unused&src=.*Routes\\.scala:s",
-      "-Wconf:cat=unused&src=.*ReverseRoutes\\.scala:s",
-      "-Wconf:cat=unused&src=.*JavaScriptReverseRoutes\\.scala:s",
-      "-Wconf:src=routes/.*:s")
+      "-Werror",
+      "-language:noAutoTupling",
+      "-language:strictEquality",
+      "-Wvalue-discard",
+      "-Xfatal-warnings",
+      "-Wconf:msg=unused import&src=.*views\\.html.*:s",
+      "-Wconf:msg=unused import&src=<empty>:s",
+      "-Wconf:msg=unused&src=.*RoutesPrefix\\.scala:s",
+      "-Wconf:msg=unused&src=.*Routes\\.scala:s",
+      "-Wconf:msg=unused&src=.*ReverseRoutes\\.scala:s",
+      "-Wconf:msg=Flag.*repeatedly:s"
+    )
   )
   .settings(
     scoverageSettings,

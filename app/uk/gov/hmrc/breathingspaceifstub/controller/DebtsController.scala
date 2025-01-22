@@ -27,7 +27,7 @@ import uk.gov.hmrc.breathingspaceifstub.utils.ControllerSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 @Singleton()
-class DebtsController @Inject()(
+class DebtsController @Inject() (
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
     extends BackendController(cc)
@@ -44,7 +44,7 @@ class DebtsController @Inject()(
       case "AS000003" => sendResponse(OK, jsonDataFromFile("multipleBsDebtsFullPopulation.json"))
       case "AS000004" => sendResponse(OK, jsonDataFromFile("multipleBsDebtsPartialPopulation.json"))
       case "AS000005" => sendResponse(OK, jsonDataFromFile("multipleBsDebtsMixedPopulation.json"))
-      case _ => sendResponse(NOT_FOUND, failures("NO_DATA_FOUND", "No records found for the given Nino"))
+      case _          => sendResponse(NOT_FOUND, failures("NO_DATA_FOUND", "No records found for the given Nino"))
     }
 
   def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"debts/$filename")

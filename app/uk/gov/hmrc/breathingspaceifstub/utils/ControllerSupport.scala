@@ -45,8 +45,8 @@ trait ControllerSupport extends Results with Logging {
         .as(MimeTypes.JSON)
     }
 
-  def composeResponse(nino: String, acceptedHandler: (String) => Future[Result])(
-    implicit request: Request[_]
+  def composeResponse(nino: String, acceptedHandler: (String) => Future[Result])(implicit
+    request: Request[_]
   ): Future[Result] = {
     val normalisedNino = nino.toUpperCase.take(8)
     if (normalisedNino.take(2) == "BS") sendErrorResponseFromNino(normalisedNino) // a bad nino
@@ -59,7 +59,7 @@ trait ControllerSupport extends Results with Logging {
   }
 
   def getJsonDataFromFile(filename: String): JsValue = {
-    val in = getClass.getResourceAsStream(s"/data/$filename")
+    val in  = getClass.getResourceAsStream(s"/data/$filename")
     val raw = Source.fromInputStream(in).getLines().mkString
     Json.parse(raw)
   }

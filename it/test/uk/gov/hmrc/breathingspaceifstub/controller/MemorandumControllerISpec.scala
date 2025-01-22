@@ -20,7 +20,7 @@ import play.api.http.Status
 import uk.gov.hmrc.breathingspaceifstub.Header
 import uk.gov.hmrc.breathingspaceifstub.model.CorrelationId
 import uk.gov.hmrc.breathingspaceifstub.support.{BaseISpec, ControllerBehaviours}
-
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import scala.io.Source
 
 class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {
@@ -35,22 +35,22 @@ class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {
 
     "return 200(OK) with breathing space indicator true when the Nino 'AS000001A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000001A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("hasBreathingSpaceIndicator.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("hasBreathingSpaceIndicator.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with breathing space indicator false when the Nino 'AS000002A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AS000002A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("noBreathingSpaceIndicator.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("noBreathingSpaceIndicator.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
     "return 200(OK) with breathing space indicator false when the Nino 'AA000333A' is sent" in {
       val response = makeGetRequest(getConnectionUrl("AA000333A"))
-      response.status shouldBe Status.OK
-      response.body shouldBe getExpectedResponseBody("hasBreathingSpaceIndicator.json")
+      response.status                       shouldBe Status.OK
+      response.body                         shouldBe getExpectedResponseBody("hasBreathingSpaceIndicator.json")
       response.header(Header.CorrelationId) shouldBe correlationHeaderValue.value
     }
 
@@ -71,7 +71,7 @@ class MemorandumControllerISpec extends BaseISpec with ControllerBehaviours {
   }
 
   private def getConnectionUrl(nino: String): String =
-    s"${testServerAddress}/individuals/breathing-space/${nino}/memorandum"
+    s"$testServerAddress/individuals/breathing-space/$nino/memorandum"
 
   private def getExpectedResponseBody(filename: String): String = {
     val in = getClass.getResourceAsStream(s"/data/memorandum/$filename")

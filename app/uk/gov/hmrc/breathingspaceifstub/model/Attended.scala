@@ -24,8 +24,8 @@ object Attended {
   case object DA2_BS_UNATTENDED extends Attended
 
   def withNameOption(name: String): Option[Attended] = name match {
-    case "DA2_BS_ATTENDED" => Some(DA2_BS_ATTENDED)
+    case "DA2_BS_ATTENDED"   => Some(DA2_BS_ATTENDED)
     case "DA2_BS_UNATTENDED" => Some(DA2_BS_UNATTENDED)
-    case _ => None
+    case _                   => None
   }
 }

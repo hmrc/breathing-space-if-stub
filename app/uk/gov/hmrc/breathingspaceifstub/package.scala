@@ -20,7 +20,7 @@ package object breathingspaceifstub {
 
   object Header {
     lazy val CorrelationId = "CorrelationId"
-    lazy val OriginatorId = "OriginatorId"
-    lazy val UserId = "UserId"
+    lazy val OriginatorId  = "OriginatorId"
+    lazy val UserId        = "UserId"
   }
 }

@@ -25,7 +25,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton()
-class MemorandumController @Inject()(
+class MemorandumController @Inject() (
   cc: ControllerComponents
 )(implicit val ec: ExecutionContext)
     extends BackendController(cc)
@@ -42,7 +42,7 @@ class MemorandumController @Inject()(
       case "AA000333" => sendResponse(OK, jsonDataFromFile("hasBreathingSpaceIndicator.json"))
       case "AS000003" => sendResponse(UNPROCESSABLE_ENTITY, failures("UNKNOWN_DATA_ITEM"))
       case "AS000004" => sendResponse(BAD_GATEWAY, failures("BAD_GATEWAY"))
-      case _ => sendResponse(NOT_FOUND, failures("NO_DATA_FOUND", "No records found for the given Nino"))
+      case _          => sendResponse(NOT_FOUND, failures("NO_DATA_FOUND", "No records found for the given Nino"))
     }
 
   def jsonDataFromFile(filename: String): JsValue = getJsonDataFromFile(s"memorandum/$filename")
